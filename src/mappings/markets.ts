@@ -321,7 +321,7 @@ export function updateMarket(
     }
 
     market.borrowRate = calculateRatePerYear(borrowRate)
-    market.supplyAPY = calculateAPY(borrowRate)
+    market.borrowAPY = calculateAPY(borrowRate)
 
     // Must convert to BigDecimal, and remove 10^18 that is used for Exp in Compound Solidity
     market.save()
@@ -356,5 +356,6 @@ function calculateAPY(ratePerBlock: BigDecimal): BigDecimal {
   // calculate apy
   let apy = c.times(HUNDRED_BD)
 
+  log.info('APY::calc {} {}', [ratePerBlock.toString(), apy.toString()])
   return apy
 }
