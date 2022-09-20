@@ -17,8 +17,12 @@ import { updateCommonCTokenStats } from './helpers'
 import { createMarket } from './markets'
 
 export function handleMarketEntered(event: MarketEntered): void {
-  // log.info("COMPTROLLER::handleMarketEntered",[])
-  let market = Market.load(event.params.cToken.toHexString())
+  log.info('COMPTROLLER::handleMarketEntered', [])
+  let marketId = event.params.cToken.toHexString()
+  let market = Market.load(marketId)
+  if (market === null) {
+    market = createMarket(marketId)
+  }
   let accountID = event.params.account.toHex()
   let cTokenStats = updateCommonCTokenStats(
     market.id,
@@ -33,8 +37,12 @@ export function handleMarketEntered(event: MarketEntered): void {
 }
 
 export function handleMarketExited(event: MarketExited): void {
-  // log.info("COMPTROLLER::handleMarketExited",[])
-  let market = Market.load(event.params.cToken.toHexString())
+  log.info('COMPTROLLER::handleMarketExited', [])
+  let marketId = event.params.cToken.toHexString()
+  let market = Market.load(marketId)
+  if (market === null) {
+    market = createMarket(marketId)
+  }
   let accountID = event.params.account.toHex()
   let cTokenStats = updateCommonCTokenStats(
     market.id,
@@ -49,17 +57,16 @@ export function handleMarketExited(event: MarketExited): void {
 }
 
 export function handleNewCloseFactor(event: NewCloseFactor): void {
-  // log.info("COMPTROLLER::handleNewCloseFactor",[])
+  log.info('COMPTROLLER::handleNewCloseFactor', [])
   let comptroller = Comptroller.load('1')
   comptroller.closeFactor = event.params.newCloseFactorMantissa
   comptroller.save()
 }
 
 export function handleNewCollateralFactor(event: NewCollateralFactor): void {
-  // log.info("COMPTROLLER::handleNewCollateralFactor",[])
-  let marketId = event.params.cToken.toHexString()
+  log.info('COMPTROLLER::handleNewCollateralFactor', [])
+  let marketId = event.params.cToken.toHex()
   let market = Market.load(marketId)
-  // log.info("COMPTROLLER::CUSTOM handle - " + event.params.cToken.toHexString() + " {}", [market.id])
   if (market == null) {
     market = createMarket(marketId)
   }
@@ -71,7 +78,7 @@ export function handleNewCollateralFactor(event: NewCollateralFactor): void {
 
 // This should be the first event acccording to etherscan but it isn't.... price oracle is. weird
 export function handleNewLiquidationIncentive(event: NewLiquidationIncentive): void {
-  // log.info("COMPTROLLER::handleNewLiquidationIncentive",[])
+  log.info('COMPTROLLER::handleNewLiquidationIncentive', [])
   let comptroller = Comptroller.load('1')
   comptroller.liquidationIncentive = event.params.newLiquidationIncentiveMantissa
   comptroller.save()
@@ -84,7 +91,7 @@ export function handleNewLiquidationIncentive(event: NewLiquidationIncentive): v
 // }
 
 export function handleNewPriceOracle(event: NewPriceOracle): void {
-  // log.info("COMPTROLLER::handleNewPriceOracle",[])
+  log.info('COMPTROLLER::handleNewPriceOracle', [])
   let comptroller = Comptroller.load('1')
   // This is the first event used in this mapping, so we use it to create the entity
   if (comptroller == null) {

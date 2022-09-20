@@ -62,7 +62,7 @@ export function handleRedeem(event: Redeem): void {
  *    No need to updateMarket(), handleAccrueInterest() ALWAYS runs before this
  */
 export function handleBorrow(event: Borrow): void {
-  // log.info("CTOKEN::handleBorrow",[])
+  log.info('CTOKEN::handleBorrow', [])
   let marketId = event.address.toHexString()
   let market = Market.load(marketId)
   if (market == null) {
@@ -128,7 +128,7 @@ export function handleBorrow(event: Borrow): void {
  *    repay.
  */
 export function handleRepayBorrow(event: RepayBorrow): void {
-  // log.info("CTOKEN::handleRepayBorrow",[])
+  log.info('CTOKEN::handleRepayBorrow', [])
   let marketId = event.address.toHexString()
   let market = Market.load(marketId)
   if (market == null) {
@@ -190,7 +190,7 @@ export function handleRepayBorrow(event: RepayBorrow): void {
  *    add liquidation counts in this handler.
  */
 export function handleLiquidateBorrow(event: LiquidateBorrow): void {
-  // log.info("CTOKEN::handleLiquidateBorrow",[])
+  log.info('CTOKEN::handleLiquidateBorrow', [])
   let liquidatorID = event.params.liquidator.toHex()
   let liquidator = Account.load(liquidatorID)
   if (liquidator == null) {
@@ -226,7 +226,7 @@ export function handleLiquidateBorrow(event: LiquidateBorrow): void {
 export function handleTransfer(event: Transfer): void {
   // We only updateMarket() if accrual block number is not up to date. This will only happen
   // with normal transfers, since mint, redeem, and seize transfers will already run updateMarket()
-  // log.info("CTOKEN::handleTransfer",[])
+  log.info('CTOKEN::handleTransfer', [])
   let marketId = event.address.toHexString()
   let market = Market.load(marketId)
   if (market == null) {
@@ -334,12 +334,12 @@ export function handleTransfer(event: Transfer): void {
 }
 
 export function handleAccrueInterest(event: AccrueInterest): void {
-  // log.info("CTOKEN::handleAccrueInterest",[])
+  log.info('CTOKEN::handleAccrueInterest', [])
   updateMarket(event.address, event.block.number.toI32(), event.block.timestamp.toI32())
 }
 
 export function handleNewReserveFactor(event: NewReserveFactor): void {
-  // log.info("CTOKEN::handleNewReserveFactor",[])
+  log.info('CTOKEN::handleNewReserveFactor', [])
   let marketId = event.address.toHex()
   let market = Market.load(marketId)
   if (market == null) {
@@ -352,7 +352,7 @@ export function handleNewReserveFactor(event: NewReserveFactor): void {
 export function handleNewMarketInterestRateModel(
   event: NewMarketInterestRateModel,
 ): void {
-  // log.info("CTOKEN::handleNewMarketInterestRateModel",[])
+  log.info('CTOKEN::handleNewMarketInterestRateModel', [])
   let marketId = event.address.toHex()
   let market = Market.load(marketId)
   if (market == null) {

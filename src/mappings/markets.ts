@@ -143,6 +143,7 @@ function getUsdcPriceNOTE(blockNumber: i32): BigDecimal {
 }
 
 export function createMarket(marketAddress: string): Market {
+  log.info('MARKETS::createMarket', [])
   let market: Market
   let contract = CToken.bind(Address.fromString(marketAddress))
 
@@ -161,6 +162,8 @@ export function createMarket(marketAddress: string): Market {
   } else {
     market = new Market(marketAddress)
     let underlyingAddress = Address.fromString(ADDRESS_ZERO)
+    log.info('MARKETS::createMarket->{}', [marketAddress])
+
     let underlyingAddressResult = contract.try_underlying()
     if (!underlyingAddressResult.reverted) {
       underlyingAddress = underlyingAddressResult.value
@@ -186,13 +189,26 @@ export function createMarket(marketAddress: string): Market {
   market.interestRateModelAddress = Address.fromString(
     '0x0000000000000000000000000000000000000000',
   )
-  market.name = contract.name()
+
+  let name = 'N/A'
+  let nameResult = contract.try_name()
+  if (!nameResult.reverted) {
+    name = nameResult.value
+  }
+
+  let symbol = 'N/A'
+  let symbolResult = contract.try_symbol()
+  if (!symbolResult.reverted) {
+    symbol = symbolResult.value
+  }
+
+  market.name = name
   market.numberOfBorrowers = 0
   market.numberOfSuppliers = 0
   market.reserves = ZERO_BD
   market.supplyRate = ZERO_BD
   market.supplyAPY = ZERO_BD
-  market.symbol = contract.symbol()
+  market.symbol = symbol
   market.totalBorrows = ZERO_BD
   market.totalSupply = ZERO_BD
   market.underlyingPrice = ZERO_BD
