@@ -20,7 +20,7 @@ export function handleMarketEntered(event: MarketEntered): void {
   log.info('COMPTROLLER::handleMarketEntered', [])
   let marketId = event.params.cToken.toHexString()
   let market = Market.load(marketId)
-  if (market === null) {
+  if (market == null) {
     market = createMarket(marketId)
   }
   let accountID = event.params.account.toHex()

@@ -13,22 +13,41 @@ import { CToken } from '../types/cNote/CToken'
 import { exponentToBigDecimal, powerToBigDecimal } from './helpers'
 import {
   ADDRESS_ZERO,
+  ATOM_ADDRESS,
   BaseV1Router_Address,
   BLOCK_TIME_BD,
+  CantoAtom_ADDRESS,
+  CantoEth_Address,
+  CantoNote_Address,
+  cATOM_ADDRESS,
+  cCantoAtom_ADDRESS,
+  cCantoEth_ADDRESS,
+  cCantoNote_ADDRESS,
   cCANTO_ADDRESS,
-  cCANTO_ADDRESS_SMALL_CASE,
+  cETH_ADDRESS,
+  cNoteUsdc_Address,
+  cNoteUsdt_Address,
+  cNOTE_ADDRESS,
   cTOKEN_DECIMALS_BD,
   cUSDC_ADDRESS,
+  cUSDT_ADDRESS,
   DAYS_IN_YEAR,
   DAYS_IN_YEAR_BD,
+  ETH_ADDRESS,
   HUNDRED_BD,
   MANTISSA_FACTOR,
   MANTISSA_FACTOR_BD,
   NegOne_BD,
+  NoteUsdc_Address,
+  NoteUsdt_Address,
+  NOTE_ADDRESS,
   ONE_BD,
   SECONDS_IN_DAY_BD,
+  USDC_ADDRESS,
+  USDT_ADDRESS,
   ZERO_BD,
 } from './consts'
+import { TokenDefinition } from './tokenDefinition'
 
 // Used for all cERC20 contracts
 function getTokenPrice(
@@ -40,10 +59,10 @@ function getTokenPrice(
   let comptroller = Comptroller.load('1')
   let oracleAddress = comptroller.priceOracle as Address
   let underlyingPrice: BigDecimal = NegOne_BD
-  if (oracleAddress.toHexString() == '0x') {
+  if (oracleAddress.toHex() == '0x') {
     oracleAddress = Address.fromString(BaseV1Router_Address)
   }
-  // log.info("getTokenPrice - {}", [oracleAddress.toHexString()]);
+  // log.info("getTokenPrice - {}", [oracleAddress.toHex()]);
 
   /* PriceOracle2 is used at the block the Comptroller starts using it.
    * see here https://etherscan.io/address/0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b#events
@@ -102,10 +121,10 @@ function getTokenPrice(
 function getUsdcPriceNOTE(blockNumber: i32): BigDecimal {
   let comptroller = Comptroller.load('1')
   let oracleAddress = comptroller.priceOracle as Address
-  if (oracleAddress.toHexString() == '0x') {
+  if (oracleAddress.toHex() == '0x') {
     oracleAddress = Address.fromString(BaseV1Router_Address)
   }
-  // log.info("getUSDCPrice - {}", [oracleAddress.toHexString()])
+  // log.info("getUSDCPrice - {}", [oracleAddress.toHex()])
   // let priceOracle1Address = Address.fromString('02557a5e05defeffd4cae6d83ea3d173b272c904')
   let USDCAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 '
   let usdPrice: BigDecimal = NegOne_BD
@@ -147,8 +166,10 @@ export function createMarket(marketAddress: string): Market {
   let market: Market
   let contract = CToken.bind(Address.fromString(marketAddress))
 
+  log.info('MARKETS::createMarket->1', [])
+
   // It is CETH, which has a slightly different interface
-  if (marketAddress == cCANTO_ADDRESS || marketAddress == cCANTO_ADDRESS_SMALL_CASE) {
+  if (marketAddress == cCANTO_ADDRESS) {
     market = new Market(marketAddress)
     market.underlyingAddress = Address.fromString(
       '0x0000000000000000000000000000000000000000',
@@ -161,20 +182,26 @@ export function createMarket(marketAddress: string): Market {
     // It is all other CERC20 contracts
   } else {
     market = new Market(marketAddress)
-    let underlyingAddress = Address.fromString(ADDRESS_ZERO)
-    log.info('MARKETS::createMarket->{}', [marketAddress])
 
-    let underlyingAddressResult = contract.try_underlying()
-    if (!underlyingAddressResult.reverted) {
-      underlyingAddress = underlyingAddressResult.value
-    } else {
-      log.info('CUSTOM' + marketAddress.toString(), [])
-    }
-    market.underlyingAddress = underlyingAddress
+    market.underlyingAddress = cToken_underlyingAddress(marketAddress, contract)
+    log.info('MARKETS::createMarket->2', [])
+
     let underlyingContract = ERC20.bind(market.underlyingAddress as Address)
-    market.underlyingDecimals = underlyingContract.decimals()
-    market.underlyingName = underlyingContract.symbol()
-    market.underlyingSymbol = underlyingContract.symbol()
+
+    market.underlyingDecimals = erc20_decimals(
+      market.underlyingAddress.toHex(),
+      underlyingContract,
+    )
+    log.info('MARKETS::createMarket->3 {}', [market.underlyingAddress.toHex()])
+
+    market.underlyingName = erc20_symbol(
+      market.underlyingAddress.toHex(),
+      underlyingContract,
+    )
+    market.underlyingSymbol = erc20_symbol(
+      market.underlyingAddress.toHex(),
+      underlyingContract,
+    )
 
     if (marketAddress == cUSDC_ADDRESS) {
       market.underlyingPriceUSD = BigDecimal.fromString('1')
@@ -190,25 +217,13 @@ export function createMarket(marketAddress: string): Market {
     '0x0000000000000000000000000000000000000000',
   )
 
-  let name = 'N/A'
-  let nameResult = contract.try_name()
-  if (!nameResult.reverted) {
-    name = nameResult.value
-  }
-
-  let symbol = 'N/A'
-  let symbolResult = contract.try_symbol()
-  if (!symbolResult.reverted) {
-    symbol = symbolResult.value
-  }
-
-  market.name = name
+  market.name = cToken_symbol(marketAddress, contract)
   market.numberOfBorrowers = 0
   market.numberOfSuppliers = 0
   market.reserves = ZERO_BD
   market.supplyRate = ZERO_BD
   market.supplyAPY = ZERO_BD
-  market.symbol = symbol
+  market.symbol = cToken_symbol(marketAddress, contract)
   market.totalBorrows = ZERO_BD
   market.totalSupply = ZERO_BD
   market.underlyingPrice = ZERO_BD
@@ -222,13 +237,153 @@ export function createMarket(marketAddress: string): Market {
   return market
 }
 
+function erc20_decimals(address: string, contract: ERC20): i32 {
+  let staticDefinition = TokenDefinition.fromAddress(Address.fromString(address))
+  if (staticDefinition != null) {
+    return (staticDefinition as TokenDefinition).decimals
+  }
+
+  // HACKY - handling of runtine errors
+  let decimals: i32 = 0
+  let result = contract.try_decimals()
+  if (!result.reverted) {
+    decimals = result.value
+  } else {
+    log.info('CUSTOM' + address.toString(), [])
+  }
+
+  return decimals
+}
+
+function erc20_symbol(address: string, contract: ERC20): string {
+  let staticDefinition = TokenDefinition.fromAddress(Address.fromString(address))
+  if (staticDefinition != null) {
+    return (staticDefinition as TokenDefinition).symbol
+  }
+
+  // HACKY - handling of runtine errors
+  let symbol = 'N/A'
+  let result = contract.try_symbol()
+  if (!result.reverted) {
+    symbol = result.value
+  } else {
+    log.info('CUSTOM' + address.toString(), [])
+  }
+
+  return symbol
+}
+
+function cToken_name(marketAddress: string, contract: CToken): string {
+  log.info('MARKETS::cToken_underlyingAddress {}', [marketAddress])
+  let name = 'N/A'
+  // HACKY - handling of runtine errors
+  if (marketAddress == cNOTE_ADDRESS) {
+    log.info('MARKETS::cToken_name -> cNOTE_ADDRESS', [])
+    name = 'cNOTE'
+  } else if (marketAddress == cCANTO_ADDRESS) {
+    name = 'cCANTO'
+  } else if (marketAddress == cATOM_ADDRESS) {
+    name = 'cATOM'
+  } else if (marketAddress == cETH_ADDRESS) {
+    name = 'cETH'
+  } else {
+    let result = contract.try_name()
+    if (!result.reverted) {
+      name = result.value
+    } else {
+      log.info('CUSTOM' + marketAddress.toString(), [])
+    }
+  }
+
+  return name
+}
+
+function cToken_symbol(marketAddress: string, contract: CToken): string {
+  log.info('MARKETS::cToken_symbol {}', [marketAddress])
+  let symbol = 'N/A'
+  // HACKY - handling of runtine errors
+  if (marketAddress == cNOTE_ADDRESS) {
+    log.info('MARKETS::cToken_symbol -> cNOTE_ADDRESS', [])
+    symbol = 'cNOTE'
+  } else if (marketAddress == cCANTO_ADDRESS) {
+    symbol = 'cCANTO'
+  } else if (marketAddress == cATOM_ADDRESS) {
+    symbol = 'cATOM'
+  } else if (marketAddress == cETH_ADDRESS) {
+    symbol = 'cETH'
+  } else if (marketAddress == cUSDC_ADDRESS) {
+    symbol = 'cUSDC'
+  } else if (marketAddress == cUSDT_ADDRESS) {
+    symbol = 'cUSDT'
+  } else if (marketAddress == cCantoNote_ADDRESS) {
+    symbol = 'cCANTO/NOTE'
+  } else if (marketAddress == cCantoEth_ADDRESS) {
+    symbol = 'cCANTO/ETH'
+  } else if (marketAddress == cCantoAtom_ADDRESS) {
+    symbol = 'cCANTO/ATOM'
+  } else if (marketAddress == cNoteUsdc_Address) {
+    symbol = 'cNOTE/USDC'
+  } else if (marketAddress == cNoteUsdt_Address) {
+    symbol = 'cNOTE/USDT'
+  } else {
+    let result = contract.try_name()
+    if (!result.reverted) {
+      symbol = result.value
+    } else {
+      log.info('CUSTOM' + marketAddress.toString(), [])
+    }
+  }
+
+  return symbol
+}
+
+function cToken_underlyingAddress(marketAddress: string, contract: CToken): Address {
+  log.info('MARKETS::cToken_underlyingAddress {}', [marketAddress])
+  let underlyingAddress = ADDRESS_ZERO
+  // HACKY - handling of runtine errors
+  if (marketAddress == cNOTE_ADDRESS) {
+    log.info('MARKETS::cToken_underlyingAddress -> cNOTE_ADDRESS', [])
+    underlyingAddress = NOTE_ADDRESS
+  } else if (marketAddress == cCANTO_ADDRESS) {
+    underlyingAddress = ADDRESS_ZERO
+  } else if (marketAddress == cATOM_ADDRESS) {
+    underlyingAddress = ATOM_ADDRESS
+  } else if (marketAddress == cETH_ADDRESS) {
+    underlyingAddress = ETH_ADDRESS
+  } else if (marketAddress == cUSDC_ADDRESS) {
+    underlyingAddress = USDC_ADDRESS
+  } else if (marketAddress == cUSDT_ADDRESS) {
+    underlyingAddress = USDT_ADDRESS
+  } else if (marketAddress == cCantoNote_ADDRESS) {
+    underlyingAddress = CantoNote_Address
+  } else if (marketAddress == cCantoEth_ADDRESS) {
+    underlyingAddress = CantoEth_Address
+  } else if (marketAddress == cCantoAtom_ADDRESS) {
+    underlyingAddress = CantoAtom_ADDRESS
+  } else if (marketAddress == cNoteUsdc_Address) {
+    underlyingAddress = NoteUsdc_Address
+  } else if (marketAddress == cNoteUsdt_Address) {
+    underlyingAddress = NoteUsdt_Address
+  } else {
+    let underlyingAddressResult = contract.try_underlying()
+    log.info('MARKETS::createMarket->2 {}', [])
+    if (!underlyingAddressResult.reverted) {
+      underlyingAddress = underlyingAddressResult.value.toHex()
+    } else {
+      log.info('CUSTOM' + marketAddress.toString(), [])
+    }
+  }
+
+  return Address.fromString(underlyingAddress)
+}
+
 export function updateMarket(
   marketAddress: Address,
   blockNumber: i32,
   blockTimestamp: i32,
 ): Market | null {
-  // log.info("MARKETS::updateMarket {} {} {}", [marketAddress.toHexString(), blockNumber.toString(), blockTimestamp.toString()])
-  let marketID = marketAddress.toHexString()
+  // log.info("MARKETS::updateMarket {} {} {}", [marketAddress.toHex(), blockNumber.toString(), blockTimestamp.toString()])
+  let marketID = marketAddress.toHex()
   let market = Market.load(marketID)
   if (market == null) {
     market = createMarket(marketID)
@@ -245,7 +400,7 @@ export function updateMarket(
     }
 
     // if cETH, we only update USD price
-    if (market.id == cCANTO_ADDRESS || market.id == cCANTO_ADDRESS_SMALL_CASE) {
+    if (market.id == cCANTO_ADDRESS) {
       market.underlyingPriceUSD = market.underlyingPrice
         .div(usdPriceInNote)
         .truncate(market.underlyingDecimals)

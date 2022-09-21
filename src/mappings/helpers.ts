@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */ // to satisfy AS compiler
 
 // For each division by 10, add one to exponent to truncate one significant figure
-import { BigDecimal, Bytes } from '@graphprotocol/graph-ts/index'
+import { BigDecimal, Bytes, log } from '@graphprotocol/graph-ts/index'
 import { AccountCToken, Account } from '../types/schema'
 import { ZERO_BD } from './consts'
 
@@ -33,6 +33,7 @@ export function createAccountCToken(
   account: string,
   marketID: string,
 ): AccountCToken {
+  log.info('HELPERS::createAccountCToken', [])
   let cTokenStats = new AccountCToken(cTokenStatsID)
   cTokenStats.symbol = symbol
   cTokenStats.market = marketID
@@ -48,6 +49,7 @@ export function createAccountCToken(
   cTokenStats.totalUnderlyingRepaid = ZERO_BD
   cTokenStats.storedBorrowBalance = ZERO_BD
   cTokenStats.enteredMarket = false
+  log.info('HELPERS::createAccountCToken->COMPLETED', [])
   return cTokenStats
 }
 
@@ -68,17 +70,31 @@ export function updateCommonCTokenStats(
   timestamp: i32,
   blockNumber: i32,
 ): AccountCToken {
+  log.info('HELPERS::updateCommonCTokenStats {} {}', [marketID, accountID])
   let cTokenStatsID = marketID.concat('-').concat(accountID)
+  log.info('HELPERS::updateCommonCTokenStats->-2  {}', [cTokenStatsID])
   let cTokenStats = AccountCToken.load(cTokenStatsID)
+
+  log.info('HELPERS::updateCommonCTokenStats->0', [])
   if (cTokenStats == null) {
+    log.info('HELPERS::updateCommonCTokenStats->if', [])
     cTokenStats = createAccountCToken(cTokenStatsID, marketSymbol, accountID, marketID)
   }
+  log.info('HELPERS::updateCommonCTokenStats->-1  {}', [cTokenStats.id])
+
+  log.info('HELPERS::updateCommonCTokenStats->1', [])
   let txHashes = cTokenStats.transactionHashes
   txHashes.push(txHash)
   cTokenStats.transactionHashes = txHashes
+
+  log.info('HELPERS::updateCommonCTokenStats->2', [])
   let txTimes = cTokenStats.transactionTimes
   txTimes.push(timestamp)
   cTokenStats.transactionTimes = txTimes
+
+  log.info('HELPERS::updateCommonCTokenStats->3', [])
   cTokenStats.accrualBlockNumber = blockNumber
+
+  log.info('HELPERS::updateCommonCTokenStats->COMPLTED', [])
   return cTokenStats as AccountCToken
 }
