@@ -27,7 +27,7 @@ dataSources:
         - name: ERC20
           file: ./abis/ERC20.json
         - name: PriceOracle
-          file: ./abis/priceOracle.json
+          file: ./abis/BaseV1Router.json
       eventHandlers:
         - event: MarketEntered(address,address)
           handler: handleMarketEntered

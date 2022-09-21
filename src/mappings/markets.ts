@@ -56,6 +56,7 @@ function getTokenPrice(
   underlyingAddress: Address,
   underlyingDecimals: i32,
 ): BigDecimal {
+  log.info('MARKETS::getTokenPrice', [])
   let comptroller = Comptroller.load('1')
   let oracleAddress = comptroller.priceOracle as Address
   let underlyingPrice: BigDecimal = NegOne_BD
@@ -89,6 +90,7 @@ function getTokenPrice(
   let mantissaDecimalFactor = 18 - underlyingDecimals + 18
   let bdFactor = exponentToBigDecimal(mantissaDecimalFactor)
   let oracle = PriceOracle.bind(oracleAddress)
+  log.info('MARKETS::getTokenPrice {}', [oracleAddress.toHex()])
 
   let underlyingPriceResult = oracle.try_getUnderlyingPrice(eventAddress)
   if (!underlyingPriceResult.reverted) {
@@ -119,6 +121,7 @@ function getTokenPrice(
 
 // Returns the price of USDC in eth. i.e. 0.005 would mean ETH is $200
 function getUsdcPriceNOTE(blockNumber: i32): BigDecimal {
+  log.info('MARKETS::getUsdcPriceNOTE', [])
   let comptroller = Comptroller.load('1')
   let oracleAddress = comptroller.priceOracle as Address
   if (oracleAddress.toHex() == '0x') {
@@ -137,6 +140,7 @@ function getUsdcPriceNOTE(blockNumber: i32): BigDecimal {
     3. is this the correct if block or do we have to use the next one
   */
   // if (blockNumber > 7715908) {
+  log.info('MARKETS::getUsdcPriceNOTE {}', [oracleAddress.toHex()])
   let oracle = PriceOracle.bind(oracleAddress)
   let mantissaDecimalFactorUSDC = 18 - 6 + 18
   let bdFactorUSDC = exponentToBigDecimal(mantissaDecimalFactorUSDC)

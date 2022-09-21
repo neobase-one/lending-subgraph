@@ -63,7 +63,6 @@ export function handleRedeem(event: Redeem): void {
  */
 export function handleBorrow(event: Borrow): void {
   log.info('CTOKEN::handleBorrow', [])
-  return
   let marketId = event.address.toHex()
   let market = Market.load(marketId)
   if (market == null) {
@@ -130,7 +129,6 @@ export function handleBorrow(event: Borrow): void {
  */
 export function handleRepayBorrow(event: RepayBorrow): void {
   log.info('CTOKEN::handleRepayBorrow', [])
-  return
   let marketId = event.address.toHex()
   let market = Market.load(marketId)
   if (market == null) {
@@ -193,7 +191,6 @@ export function handleRepayBorrow(event: RepayBorrow): void {
  */
 export function handleLiquidateBorrow(event: LiquidateBorrow): void {
   log.info('CTOKEN::handleLiquidateBorrow', [])
-  return
   let liquidatorID = event.params.liquidator.toHex()
   let liquidator = Account.load(liquidatorID)
   if (liquidator == null) {
@@ -230,7 +227,6 @@ export function handleTransfer(event: Transfer): void {
   // We only updateMarket() if accrual block number is not up to date. This will only happen
   // with normal transfers, since mint, redeem, and seize transfers will already run updateMarket()
   log.info('CTOKEN::handleTransfer', [])
-  return
   let marketId = event.address.toHex()
   let market = Market.load(marketId)
   if (market == null) {
@@ -339,13 +335,11 @@ export function handleTransfer(event: Transfer): void {
 
 export function handleAccrueInterest(event: AccrueInterest): void {
   log.info('CTOKEN::handleAccrueInterest', [])
-  return
   updateMarket(event.address, event.block.number.toI32(), event.block.timestamp.toI32())
 }
 
 export function handleNewReserveFactor(event: NewReserveFactor): void {
   log.info('CTOKEN::handleNewReserveFactor', [])
-  return
   let marketId = event.address.toHex()
   let market = Market.load(marketId)
   if (market == null) {
@@ -359,7 +353,6 @@ export function handleNewMarketInterestRateModel(
   event: NewMarketInterestRateModel,
 ): void {
   log.info('CTOKEN::handleNewMarketInterestRateModel', [])
-  return
   let marketId = event.address.toHex()
   let market = Market.load(marketId)
   if (market == null) {
