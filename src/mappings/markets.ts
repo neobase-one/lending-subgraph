@@ -28,7 +28,6 @@ import {
   cNoteUsdc_Address,
   cNoteUsdt_Address,
   cNOTE_ADDRESS,
-  cTOKEN_DECIMALS_BD,
   cUSDC_ADDRESS,
   cUSDT_ADDRESS,
   DAYS_IN_YEAR,
@@ -431,6 +430,9 @@ export function updateMarket(
 
     market.accrualBlockNumber = contract.accrualBlockNumber().toI32()
     market.blockTimestamp = blockTimestamp
+
+    let cTOKEN_DECIMALS = contract.decimals()
+    let cTOKEN_DECIMALS_BD = exponentToBigDecimal(cTOKEN_DECIMALS)
     market.totalSupply = contract
       .totalSupply()
       .toBigDecimal()
