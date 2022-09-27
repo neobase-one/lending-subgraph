@@ -1,4 +1,5 @@
 import { BigDecimal } from '@graphprotocol/graph-ts'
+import { exponentToBigDecimal } from './helpers'
 
 /*
 --- ERC20 Addresses
@@ -41,10 +42,10 @@ export let HUNDRED_BD = BigDecimal.fromString('100')
 export let NegOne_BD = BigDecimal.fromString('-1')
 
 export const MANTISSA_FACTOR = 18
-export let MANTISSA_FACTOR_BD = BigDecimal.fromString(MANTISSA_FACTOR.toString())
+export let MANTISSA_FACTOR_BD = exponentToBigDecimal(MANTISSA_FACTOR)
 
-export const cTOKEN_DECIMALS = 8
-export let cTOKEN_DECIMALS_BD = BigDecimal.fromString(cTOKEN_DECIMALS.toString())
+export const cTOKEN_DECIMALS = 18
+export let cTOKEN_DECIMALS_BD = exponentToBigDecimal(cTOKEN_DECIMALS)
 
 export const BLOCK_TIME = 5
 export let BLOCK_TIME_BD = BigDecimal.fromString(BLOCK_TIME.toString())
