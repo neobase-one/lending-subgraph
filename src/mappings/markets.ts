@@ -521,11 +521,9 @@ function calculateRatePerYear(ratePerBlock: BigDecimal): BigDecimal {
 
 function calculateAPY(ratePerBlock: BigDecimal): BigDecimal {
   let blocksPerDay = SECONDS_IN_DAY_BD.div(BLOCK_TIME_BD)
-  let mantissa = exponentToBigDecimal(MANTISSA_FACTOR)
-  let denom = mantissa
   // let denom = mantissa.times(blockPerDay);
   let rate = BigDecimal.fromString(ratePerBlock.toString())
-  let frac = rate.times(blocksPerDay).div(denom)
+  let frac = rate.times(blocksPerDay)
   let a = frac.plus(ONE_BD)
   let b = powerToBigDecimal(a, DAYS_IN_YEAR)
   let c = b.minus(ONE_BD)
