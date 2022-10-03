@@ -47,7 +47,7 @@ export let MANTISSA_FACTOR_BD = exponentToBigDecimal(MANTISSA_FACTOR)
 export const cTOKEN_DECIMALS = 18
 export let cTOKEN_DECIMALS_BD = exponentToBigDecimal(cTOKEN_DECIMALS)
 
-export const BLOCK_TIME = 5
+export const BLOCK_TIME = 5.8
 export let BLOCK_TIME_BD = BigDecimal.fromString(BLOCK_TIME.toString())
 
 export const SECONDS_IN_DAY = 24 * 60 * 60
