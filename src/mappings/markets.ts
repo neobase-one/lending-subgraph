@@ -504,7 +504,8 @@ export function updateMarket(
 
     // DISTRIBUTION APY
     let comptrollerContract = ComptrollerContract.bind(Comptroller_Address as Address)
-    let borrowBalanceStoredResult = contract.try_borrowBalanceStored()
+    let account = Address.fromString('') // todo
+    let borrowBalanceStoredResult = contract.try_borrowBalanceStored(account)
     let borrowBalanceStored = ZERO_BD
     if (!borrowBalanceStoredResult.reverted) {
       borrowBalanceStored = borrowBalanceStoredResult.value.toBigDecimal()
@@ -520,13 +521,13 @@ export function updateMarket(
     let tokenPrice = getTokenPrice(
       blockNumber,
       contractAddress,
-      market.underlyingAddress,
+      market.underlyingAddress as Address,
       market.underlyingDecimals,
     )
     let cantoPrice = getTokenPrice(
       blockNumber,
       Address.fromString(cCANTO_ADDRESS),
-      market.underlyingAddress,
+      market.underlyingAddress as Address,
       market.underlyingDecimals,
     )
 
