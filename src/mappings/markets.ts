@@ -215,6 +215,7 @@ export function createMarket(marketAddress: string): Market {
 
   market.borrowRate = ZERO_BD
   market.borrowAPY = ZERO_BD
+  market.borrowDistributionAPY = ZERO_BD
   market.cash = ZERO_BD
   market.collateralFactor = ZERO_BD
   market.exchangeRate = ZERO_BD
@@ -228,6 +229,7 @@ export function createMarket(marketAddress: string): Market {
   market.reserves = ZERO_BD
   market.supplyRate = ZERO_BD
   market.supplyAPY = ZERO_BD
+  market.supplyDistributionAPY = ZERO_BD
   market.symbol = cToken_symbol(marketAddress, contract)
   market.totalBorrows = ZERO_BD
   market.totalSupply = ZERO_BD
@@ -503,7 +505,10 @@ export function updateMarket(
     market.borrowAPY = calculateAPY(borrowRate)
 
     // DISTRIBUTION APY
-    let comptrollerContract = ComptrollerContract.bind(Comptroller_Address as Address)
+    let comptrollerContract = ComptrollerContract.bind(
+      Address.fromString(Comptroller_Address),
+    )
+
     let cashResult = contract.try_getCash()
     let cash = ZERO_BD
     if (!cashResult.reverted) {
@@ -515,6 +520,15 @@ export function updateMarket(
     let compSupplySpeed = ZERO_BD
     if (!compSupplySpeedResult.reverted) {
       compSupplySpeed = compSupplySpeedResult.value.toBigDecimal()
+      log.info('SupplyCompSpeed - true {} {}', [
+        marketAddress.toHex(),
+        compSupplySpeed.toString(),
+      ])
+    } else {
+      log.info('SupplyCompSpeed - false {} {}', [
+        marketAddress.toHex(),
+        compSupplySpeed.toString(),
+      ])
     }
 
     let tokenPrice = getTokenPrice(
@@ -542,6 +556,15 @@ export function updateMarket(
     let compBorrowSpeed = ZERO_BD
     if (!compBorrowSpeedResult.reverted) {
       compBorrowSpeed = compBorrowSpeedResult.value.toBigDecimal()
+      log.info('BorrowCompSpeed - true {} {}', [
+        marketAddress.toHex(),
+        compBorrowSpeed.toString(),
+      ])
+    } else {
+      log.info('BorrowCompSpeed - false {} {}', [
+        marketAddress.toHex(),
+        compBorrowSpeed.toString(),
+      ])
     }
 
     market.borrowDistributionAPY = calculateDistributionAPY(
@@ -594,6 +617,12 @@ function calculateDistributionAPY(
   tokenPrice: BigDecimal,
   priceOfCanto: BigDecimal,
 ): BigDecimal {
+  log.info('Dist APY {} {} {} {}', [
+    compSpeed.toString(),
+    tokenSupply.toString(),
+    tokenPrice.toString(),
+    priceOfCanto.toString(),
+  ])
   if (tokenSupply.equals(ZERO_BD) || tokenPrice.equals(ZERO_BD)) {
     return ZERO_BD
   }

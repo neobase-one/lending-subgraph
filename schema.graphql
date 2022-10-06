@@ -73,8 +73,6 @@ type Market @entity { # TODO rename to CToken, not market AND ALL OTHERS
     underlyingPriceUSD: BigDecimal!
     "Underlying token decimal length"
     underlyingDecimals: Int!
-    "distribution APY"
-    distributionAPY: BigDecimal!
 }
 
 # Users within the protocol
