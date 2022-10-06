@@ -504,11 +504,10 @@ export function updateMarket(
 
     // DISTRIBUTION APY
     let comptrollerContract = ComptrollerContract.bind(Comptroller_Address as Address)
-    let account = Address.fromString('') // todo
-    let borrowBalanceStoredResult = contract.try_borrowBalanceStored(account)
-    let borrowBalanceStored = ZERO_BD
-    if (!borrowBalanceStoredResult.reverted) {
-      borrowBalanceStored = borrowBalanceStoredResult.value.toBigDecimal()
+    let cashResult = contract.try_getCash()
+    let cash = ZERO_BD
+    if (!cashResult.reverted) {
+      cash = cashResult.value.toBigDecimal()
     }
 
     // Supply Distribution APY
@@ -524,7 +523,7 @@ export function updateMarket(
       market.underlyingAddress as Address,
       market.underlyingDecimals,
     )
-    let cantoPrice = getTokenPrice(
+    let cCantoPrice = getTokenPrice(
       blockNumber,
       Address.fromString(cCANTO_ADDRESS),
       market.underlyingAddress as Address,
@@ -533,9 +532,9 @@ export function updateMarket(
 
     market.supplyDistributionAPY = calculateDistributionAPY(
       compSupplySpeed,
-      borrowBalanceStored,
+      cash,
       tokenPrice,
-      cantoPrice,
+      cCantoPrice,
     )
 
     // Borrow Distribution APY
@@ -547,9 +546,9 @@ export function updateMarket(
 
     market.borrowDistributionAPY = calculateDistributionAPY(
       compBorrowSpeed,
-      borrowBalanceStored,
+      cash,
       tokenPrice,
-      cantoPrice,
+      cCantoPrice,
     )
 
     // Must convert to BigDecimal, and remove 10^18 that is used for Exp in Compound Solidity
