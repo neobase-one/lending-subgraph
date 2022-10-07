@@ -88,7 +88,7 @@ function getTokenPrice(
     3. which block: if or else or both?
   */
   // if (blockNumber > 7715908) {
-  let mantissaDecimalFactor = 18
+  let mantissaDecimalFactor = 18 + 18 - underlyingDecimals
   let bdFactor = exponentToBigDecimal(mantissaDecimalFactor)
   let oracle = PriceOracle.bind(oracleAddress)
   log.info('MARKETS::getTokenPrice {}', [oracleAddress.toHex()])
@@ -143,7 +143,7 @@ function getUsdcPriceNOTE(blockNumber: i32): BigDecimal {
   // if (blockNumber > 7715908) {
   log.info('MARKETS::getUsdcPriceNOTE {}', [oracleAddress.toHex()])
   let oracle = PriceOracle.bind(oracleAddress)
-  let mantissaDecimalFactorUSDC = 18
+  let mantissaDecimalFactorUSDC = 18 + 18 - 6
   let bdFactorUSDC = exponentToBigDecimal(mantissaDecimalFactorUSDC)
 
   let underlyingPriceResult = oracle.try_getUnderlyingPrice(
