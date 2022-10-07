@@ -35,10 +35,14 @@ type Market @entity { # TODO rename to CToken, not market AND ALL OTHERS
     supplyRate: BigDecimal!
     "supply APY"
     supplyAPY: BigDecimal!
+    "supply distribution APY"
+    supplyDistributionAPY: BigDecimal!
     "Yearly borrow rate. With x blocks per year at 5 s/block"
     borrowRate: BigDecimal!
     "borrow APY"
     borrowAPY: BigDecimal!
+    "borrowDistribution APY"
+    borrowDistributionAPY: BigDecimal!
     "CToken symbol"
     symbol: String!
     "CToken address"

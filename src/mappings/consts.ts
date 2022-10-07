@@ -2,6 +2,11 @@ import { BigDecimal } from '@graphprotocol/graph-ts'
 import { exponentToBigDecimal } from './helpers'
 
 /*
+--- Comptroller Address
+*/
+export const Comptroller_Address = '0x5e23dc409fc2f832f83cec191e245a191a4bcc5c'
+
+/*
 --- ERC20 Addresses
 */
 export const NOTE_ADDRESS = '0x4e71a2e537b7f9d9413d3991d37958c0b5e1e503'

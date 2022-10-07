@@ -58,6 +58,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle
@@ -96,6 +98,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle
@@ -134,6 +138,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle
@@ -172,6 +178,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle
@@ -210,6 +218,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle
@@ -248,6 +258,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle
@@ -286,6 +298,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle
@@ -324,6 +338,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle
@@ -362,6 +378,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle
@@ -400,6 +418,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle
@@ -438,6 +458,8 @@ dataSources:
         - Market
         - CTokenInfo
       abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
         - name: CToken
           file: ./abis/CToken.json
         - name: PriceOracle

@@ -9,6 +9,7 @@ import { PriceOracle } from '../types/cNote/PriceOracle'
 // import { PriceOracle2 } from '../types/cREP/PriceOracle2'
 import { ERC20 } from '../types/cNote/ERC20'
 import { CToken } from '../types/cNote/CToken'
+import { Comptroller as ComptrollerContract } from '../types/Comptroller/Comptroller'
 
 import { exponentToBigDecimal, powerToBigDecimal } from './helpers'
 import {
@@ -28,6 +29,7 @@ import {
   cNoteUsdc_Address,
   cNoteUsdt_Address,
   cNOTE_ADDRESS,
+  Comptroller_Address,
   cUSDC_ADDRESS,
   cUSDT_ADDRESS,
   DAYS_IN_YEAR,
@@ -86,7 +88,7 @@ function getTokenPrice(
     3. which block: if or else or both?
   */
   // if (blockNumber > 7715908) {
-  let mantissaDecimalFactor = 18
+  let mantissaDecimalFactor = 18 + 18 - underlyingDecimals
   let bdFactor = exponentToBigDecimal(mantissaDecimalFactor)
   let oracle = PriceOracle.bind(oracleAddress)
   log.info('MARKETS::getTokenPrice {}', [oracleAddress.toHex()])
@@ -141,7 +143,7 @@ function getUsdcPriceNOTE(blockNumber: i32): BigDecimal {
   // if (blockNumber > 7715908) {
   log.info('MARKETS::getUsdcPriceNOTE {}', [oracleAddress.toHex()])
   let oracle = PriceOracle.bind(oracleAddress)
-  let mantissaDecimalFactorUSDC = 18
+  let mantissaDecimalFactorUSDC = 18 + 18 - 6
   let bdFactorUSDC = exponentToBigDecimal(mantissaDecimalFactorUSDC)
 
   let underlyingPriceResult = oracle.try_getUnderlyingPrice(
@@ -213,6 +215,7 @@ export function createMarket(marketAddress: string): Market {
 
   market.borrowRate = ZERO_BD
   market.borrowAPY = ZERO_BD
+  market.borrowDistributionAPY = ZERO_BD
   market.cash = ZERO_BD
   market.collateralFactor = ZERO_BD
   market.exchangeRate = ZERO_BD
@@ -226,6 +229,7 @@ export function createMarket(marketAddress: string): Market {
   market.reserves = ZERO_BD
   market.supplyRate = ZERO_BD
   market.supplyAPY = ZERO_BD
+  market.supplyDistributionAPY = ZERO_BD
   market.symbol = cToken_symbol(marketAddress, contract)
   market.totalBorrows = ZERO_BD
   market.totalSupply = ZERO_BD
@@ -500,6 +504,76 @@ export function updateMarket(
     market.borrowRate = calculateRatePerYear(borrowRate)
     market.borrowAPY = calculateAPY(borrowRate)
 
+    // DISTRIBUTION APY
+    let comptrollerContract = ComptrollerContract.bind(
+      Address.fromString(Comptroller_Address),
+    )
+
+    let cashResult = contract.try_getCash()
+    let cash = ZERO_BD
+    if (!cashResult.reverted) {
+      cash = cashResult.value.toBigDecimal()
+    }
+
+    // Supply Distribution APY
+    let compSupplySpeedResult = comptrollerContract.try_compSupplySpeeds(marketAddress)
+    let compSupplySpeed = ZERO_BD
+    if (!compSupplySpeedResult.reverted) {
+      compSupplySpeed = compSupplySpeedResult.value.toBigDecimal()
+      log.info('SupplyCompSpeed - true {} {}', [
+        marketAddress.toHex(),
+        compSupplySpeed.toString(),
+      ])
+    } else {
+      log.info('SupplyCompSpeed - false {} {}', [
+        marketAddress.toHex(),
+        compSupplySpeed.toString(),
+      ])
+    }
+
+    let tokenPrice = getTokenPrice(
+      blockNumber,
+      contractAddress,
+      market.underlyingAddress as Address,
+      market.underlyingDecimals,
+    )
+    let cCantoPrice = getTokenPrice(
+      blockNumber,
+      Address.fromString(cCANTO_ADDRESS),
+      market.underlyingAddress as Address,
+      market.underlyingDecimals,
+    )
+
+    market.supplyDistributionAPY = calculateDistributionAPY(
+      compSupplySpeed,
+      cash,
+      tokenPrice,
+      cCantoPrice,
+    )
+
+    // Borrow Distribution APY
+    let compBorrowSpeedResult = comptrollerContract.try_compBorrowSpeeds(marketAddress)
+    let compBorrowSpeed = ZERO_BD
+    if (!compBorrowSpeedResult.reverted) {
+      compBorrowSpeed = compBorrowSpeedResult.value.toBigDecimal()
+      log.info('BorrowCompSpeed - true {} {}', [
+        marketAddress.toHex(),
+        compBorrowSpeed.toString(),
+      ])
+    } else {
+      log.info('BorrowCompSpeed - false {} {}', [
+        marketAddress.toHex(),
+        compBorrowSpeed.toString(),
+      ])
+    }
+
+    market.borrowDistributionAPY = calculateDistributionAPY(
+      compBorrowSpeed,
+      cash,
+      tokenPrice,
+      cCantoPrice,
+    )
+
     // Must convert to BigDecimal, and remove 10^18 that is used for Exp in Compound Solidity
     market.save()
   }
@@ -535,4 +609,31 @@ function calculateAPY(ratePerBlock: BigDecimal): BigDecimal {
 
   log.info('APY::calc {} {}', [ratePerBlock.toString(), apy.toString()])
   return apy
+}
+
+function calculateDistributionAPY(
+  compSpeed: BigDecimal,
+  tokenSupply: BigDecimal,
+  tokenPrice: BigDecimal,
+  priceOfCanto: BigDecimal,
+): BigDecimal {
+  log.info('Dist APY {} {} {} {}', [
+    compSpeed.toString(),
+    tokenSupply.toString(),
+    tokenPrice.toString(),
+    priceOfCanto.toString(),
+  ])
+  if (tokenSupply.equals(ZERO_BD) || tokenPrice.equals(ZERO_BD)) {
+    return ZERO_BD
+  }
+
+  let blocksPerDay = SECONDS_IN_DAY_BD.div(BLOCK_TIME_BD)
+  let blocksPerYear = blocksPerDay.times(DAYS_IN_YEAR_BD)
+  let distApy = compSpeed
+    .times(blocksPerYear)
+    .div(tokenSupply)
+    .times(priceOfCanto.div(tokenPrice))
+    .times(HUNDRED_BD)
+
+  return distApy
 }
