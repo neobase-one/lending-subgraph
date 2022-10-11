@@ -57,6 +57,8 @@ type Market @entity { # TODO rename to CToken, not market AND ALL OTHERS
     underlyingName: String!
     "Underlying price of token in ETH (ex. 0.007 DAI)"
     underlyingPrice: BigDecimal!
+    "Liquiidty of token in NOTE"
+    liquidity: BigDecimal!
     "Underlying token symbol"
     underlyingSymbol: String!
 
@@ -71,6 +73,8 @@ type Market @entity { # TODO rename to CToken, not market AND ALL OTHERS
     reserveFactor: BigInt!
     "Underlying token price in USD"
     underlyingPriceUSD: BigDecimal!
+    "Liquiidty of token in USD"
+    liquidityUSD: BigDecimal!
     "Underlying token decimal length"
     underlyingDecimals: Int!
 }

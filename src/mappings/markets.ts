@@ -240,6 +240,8 @@ export function createMarket(marketAddress: string): Market {
   market.borrowIndex = ZERO_BD
   market.reserveFactor = BigInt.fromI32(0)
   market.underlyingPriceUSD = ZERO_BD
+  market.liquidity = ZERO_BD
+  market.liquidityUSD = ZERO_BD
 
   return market
 }
@@ -406,7 +408,7 @@ export function updateMarket(
       return null
     }
 
-    // if cETH, we only update USD price
+    // if cCANTO, we only update USD price
     if (market.id == cCANTO_ADDRESS) {
       market.underlyingPriceUSD = market.underlyingPrice
         .div(usdPriceInNote)
@@ -431,6 +433,9 @@ export function updateMarket(
           .truncate(market.underlyingDecimals)
       }
     }
+
+    market.liquidity = market.cash.times(market.underlyingPrice)
+    market.liquidityUSD = market.cash.times(market.underlyingPriceUSD)
 
     market.accrualBlockNumber = contract.accrualBlockNumber().toI32()
     market.blockTimestamp = blockTimestamp
