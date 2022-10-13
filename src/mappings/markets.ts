@@ -408,8 +408,8 @@ export function updateMarket(
       return null
     }
 
-    // if cCANTO, we only update USD price
-    if (market.id == cCANTO_ADDRESS) {
+    // if cNOTE, we only update USD price
+    if (market.id == cNOTE_ADDRESS) {
       market.underlyingPriceUSD = market.underlyingPrice
         .div(usdPriceInNote)
         .truncate(market.underlyingDecimals)
@@ -431,6 +431,8 @@ export function updateMarket(
         market.underlyingPriceUSD = market.underlyingPrice
           .div(usdPriceInNote)
           .truncate(market.underlyingDecimals)
+      } else {
+        market.underlyingPriceUSD = ONE_BD
       }
     }
 
