@@ -39,7 +39,7 @@ export const cNoteUsdt_Address = '0xf0cd6b5ce8a01d1b81f1d8b76643866c5816b49f'
 export const wCANTO_ADDRESS = '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B'
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 
-export const BaseV1Router_Address = '0x8fa61F21Fb514d2914a48B29810900Da876E295b'
+export const BaseV1Router_Address = '0xa252eee9bde830ca4793f054b506587027825a8e'
 
 export let ZERO_BD = BigDecimal.fromString('0')
 export let ONE_BD = BigDecimal.fromString('1')
