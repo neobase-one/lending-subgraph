@@ -54,7 +54,6 @@ function getTokenPrice(
   underlyingAddress: Address,
   underlyingDecimals: i32,
 ): BigDecimal {
-  log.info('MARKETS::getTokenPrice', [])
   let comptroller = Comptroller.load('1')
   let oracleAddress = comptroller.priceOracle as Address
   let underlyingPrice: BigDecimal = NegOne_BD
@@ -73,7 +72,6 @@ function getTokenPrice(
   let mantissaDecimalFactor = 18 + 18 - underlyingDecimals
   let bdFactor = exponentToBigDecimal(mantissaDecimalFactor)
   let oracle = PriceOracle.bind(oracleAddress)
-  log.info('MARKETS::getTokenPrice {}', [oracleAddress.toHex()])
 
   let underlyingPriceResult = oracle.try_getUnderlyingPrice(eventAddress)
   if (!underlyingPriceResult.reverted) {
@@ -85,7 +83,6 @@ function getTokenPrice(
 
 // Returns the price of USDC in eth. i.e. 0.005 would mean ETH is $200
 function getUsdcPriceNOTE(blockNumber: i32): BigDecimal {
-  log.info('MARKETS::getUsdcPriceNOTE', [])
   let comptroller = Comptroller.load('1')
   let oracleAddress = comptroller.priceOracle as Address
   if (oracleAddress.toHex() == '0x') {
@@ -93,7 +90,6 @@ function getUsdcPriceNOTE(blockNumber: i32): BigDecimal {
   }
   let usdPrice: BigDecimal = NegOne_BD
 
-  log.info('MARKETS::getUsdcPriceNOTE {}', [oracleAddress.toHex()])
   let oracle = PriceOracle.bind(oracleAddress)
   let mantissaDecimalFactorUSDC = 18 + 18 - 6
   let bdFactorUSDC = exponentToBigDecimal(mantissaDecimalFactorUSDC)
@@ -128,7 +124,6 @@ export function createMarket(marketAddress: string): Market {
     market = new Market(marketAddress)
 
     market.underlyingAddress = cToken_underlyingAddress(marketAddress, contract)
-    log.info('MARKETS::createMarket->2', [])
 
     let underlyingContract = ERC20.bind(market.underlyingAddress as Address)
 
@@ -136,7 +131,6 @@ export function createMarket(marketAddress: string): Market {
       market.underlyingAddress.toHex(),
       underlyingContract,
     )
-    log.info('MARKETS::createMarket->3 {}', [market.underlyingAddress.toHex()])
 
     market.underlyingName = erc20_symbol(
       market.underlyingAddress.toHex(),
@@ -194,8 +188,6 @@ function erc20_decimals(address: string, contract: ERC20): i32 {
   let result = contract.try_decimals()
   if (!result.reverted) {
     decimals = result.value
-  } else {
-    log.info('CUSTOM' + address.toString(), [])
   }
 
   return decimals
@@ -212,19 +204,15 @@ function erc20_symbol(address: string, contract: ERC20): string {
   let result = contract.try_symbol()
   if (!result.reverted) {
     symbol = result.value
-  } else {
-    log.info('CUSTOM' + address.toString(), [])
   }
 
   return symbol
 }
 
 function cToken_name(marketAddress: string, contract: CToken): string {
-  log.info('MARKETS::cToken_underlyingAddress {}', [marketAddress])
   let name = 'N/A'
   // HACKY - handling of runtine errors
   if (marketAddress == cNOTE_ADDRESS) {
-    log.info('MARKETS::cToken_name -> cNOTE_ADDRESS', [])
     name = 'cNOTE'
   } else if (marketAddress == cCANTO_ADDRESS) {
     name = 'cCANTO'
@@ -236,8 +224,6 @@ function cToken_name(marketAddress: string, contract: CToken): string {
     let result = contract.try_name()
     if (!result.reverted) {
       name = result.value
-    } else {
-      log.info('CUSTOM' + marketAddress.toString(), [])
     }
   }
 
@@ -245,11 +231,9 @@ function cToken_name(marketAddress: string, contract: CToken): string {
 }
 
 function cToken_symbol(marketAddress: string, contract: CToken): string {
-  log.info('MARKETS::cToken_symbol {}', [marketAddress])
   let symbol = 'N/A'
   // HACKY - handling of runtine errors
   if (marketAddress == cNOTE_ADDRESS) {
-    log.info('MARKETS::cToken_symbol -> cNOTE_ADDRESS', [])
     symbol = 'cNOTE'
   } else if (marketAddress == cCANTO_ADDRESS) {
     symbol = 'cCANTO'
@@ -275,8 +259,6 @@ function cToken_symbol(marketAddress: string, contract: CToken): string {
     let result = contract.try_name()
     if (!result.reverted) {
       symbol = result.value
-    } else {
-      log.info('CUSTOM' + marketAddress.toString(), [])
     }
   }
 
@@ -284,11 +266,9 @@ function cToken_symbol(marketAddress: string, contract: CToken): string {
 }
 
 function cToken_underlyingAddress(marketAddress: string, contract: CToken): Address {
-  log.info('MARKETS::cToken_underlyingAddress {}', [marketAddress])
   let underlyingAddress = ADDRESS_ZERO
   // HACKY - handling of runtine errors
   if (marketAddress == cNOTE_ADDRESS) {
-    log.info('MARKETS::cToken_underlyingAddress -> cNOTE_ADDRESS', [])
     underlyingAddress = NOTE_ADDRESS
   } else if (marketAddress == cCANTO_ADDRESS) {
     underlyingAddress = ADDRESS_ZERO
@@ -312,11 +292,8 @@ function cToken_underlyingAddress(marketAddress: string, contract: CToken): Addr
     underlyingAddress = NoteUsdt_Address
   } else {
     let underlyingAddressResult = contract.try_underlying()
-    log.info('MARKETS::createMarket->2 {}', [])
     if (!underlyingAddressResult.reverted) {
       underlyingAddress = underlyingAddressResult.value.toHex()
-    } else {
-      log.info('CUSTOM' + marketAddress.toString(), [])
     }
   }
 
@@ -468,15 +445,6 @@ export function updateMarket(
     let compSupplySpeed = ZERO_BD
     if (!compSupplySpeedResult.reverted) {
       compSupplySpeed = compSupplySpeedResult.value.toBigDecimal()
-      log.info('SupplyCompSpeed - true {} {}', [
-        marketAddress.toHex(),
-        compSupplySpeed.toString(),
-      ])
-    } else {
-      log.info('SupplyCompSpeed - false {} {}', [
-        marketAddress.toHex(),
-        compSupplySpeed.toString(),
-      ])
     }
 
     let tokenPrice = getTokenPrice(
@@ -504,15 +472,6 @@ export function updateMarket(
     let compBorrowSpeed = ZERO_BD
     if (!compBorrowSpeedResult.reverted) {
       compBorrowSpeed = compBorrowSpeedResult.value.toBigDecimal()
-      log.info('BorrowCompSpeed - true {} {}', [
-        marketAddress.toHex(),
-        compBorrowSpeed.toString(),
-      ])
-    } else {
-      log.info('BorrowCompSpeed - false {} {}', [
-        marketAddress.toHex(),
-        compBorrowSpeed.toString(),
-      ])
     }
 
     market.borrowDistributionAPY = calculateDistributionAPY(
@@ -555,7 +514,6 @@ function calculateAPY(ratePerBlock: BigDecimal): BigDecimal {
   // calculate apy
   let apy = c.times(HUNDRED_BD)
 
-  log.info('APY::calc {} {}', [ratePerBlock.toString(), apy.toString()])
   return apy
 }
 
@@ -565,12 +523,6 @@ function calculateDistributionAPY(
   tokenPrice: BigDecimal,
   priceOfCanto: BigDecimal,
 ): BigDecimal {
-  log.info('Dist APY {} {} {} {}', [
-    compSpeed.toString(),
-    tokenSupply.toString(),
-    tokenPrice.toString(),
-    priceOfCanto.toString(),
-  ])
   if (tokenSupply.equals(ZERO_BD) || tokenPrice.equals(ZERO_BD)) {
     return ZERO_BD
   }
