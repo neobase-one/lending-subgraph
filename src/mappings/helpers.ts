@@ -21,12 +21,6 @@ export function powerToBigDecimal(base: BigDecimal, exp: number): BigDecimal {
   return bd
 }
 
-// export let mantissaFactor = 18
-// export let cTokenDecimals = 8
-// export let mantissaFactorBD: BigDecimal = exponentToBigDecimal(18)
-// export let cTokenDecimalsBD: BigDecimal = exponentToBigDecimal(8)
-// export let zeroBD = BigDecimal.fromString('0')
-
 export function createAccountCToken(
   cTokenStatsID: string,
   symbol: string,

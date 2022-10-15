@@ -3,10 +3,7 @@
 // For each division by 10, add one to exponent to truncate one significant figure
 import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts/index'
 import { Market, Comptroller } from '../types/schema'
-// PriceOracle is valid from Comptroller deployment until block 8498421
 import { PriceOracle } from '../types/cNote/PriceOracle'
-// PriceOracle2 is valid from 8498422 until present block (until another proxy upgrade)
-// import { PriceOracle2 } from '../types/cREP/PriceOracle2'
 import { ERC20 } from '../types/cNote/ERC20'
 import { CToken } from '../types/cNote/CToken'
 import { Comptroller as ComptrollerContract } from '../types/Comptroller/Comptroller'
@@ -64,30 +61,15 @@ function getTokenPrice(
   if (oracleAddress.toHex() == '0x') {
     oracleAddress = Address.fromString(BaseV1Router_Address)
   }
-  // log.info("getTokenPrice - {}", [oracleAddress.toHex()]);
 
-  /* PriceOracle2 is used at the block the Comptroller starts using it.
-   * see here https://etherscan.io/address/0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b#events
-   * Search for event topic 0xd52b2b9b7e9ee655fcb95d2e5b9e0c9f69e7ef2b8e9d2d0ea78402d576d22e22,
-   * and see block 7715908.
-   *
+  /* PriceOracle
    * This must use the cToken address.
    *
    * Note this returns the value without factoring in token decimals and wei, so we must divide
    * the number by (ethDecimals - tokenDecimals) and again by the mantissa.
    * USDC would be 10 ^ ((18 - 6) + 18) = 10 ^ 30
    *
-   * Note that they deployed 3 different PriceOracles at the beginning of the Comptroller,
-   * and that they handle the decimals different, which can break the subgraph. So we actually
-   * defer to Oracle 1 before block 7715908, which works,
-   * until this one is deployed, which was used for 121 days */
-  /*
-  todo
-    1. how does mantissaDeicmalFactor work
-    2. price oracle abi
-    3. which block: if or else or both?
-  */
-  // if (blockNumber > 7715908) {
+   */
   let mantissaDecimalFactor = 18 + 18 - underlyingDecimals
   let bdFactor = exponentToBigDecimal(mantissaDecimalFactor)
   let oracle = PriceOracle.bind(oracleAddress)
@@ -97,26 +79,7 @@ function getTokenPrice(
   if (!underlyingPriceResult.reverted) {
     underlyingPrice = underlyingPriceResult.value.toBigDecimal().div(bdFactor)
   }
-  // underlyingPrice = oracle
-  //   .getUnderlyingPrice(eventAddress)
-  //   .toBigDecimal()
-  //   .div(bdFactor)
 
-  /* PriceOracle(1) is used (only for the first ~100 blocks of Comptroller. Annoying but we must
-   * handle this. We use it for more than 100 blocks, see reason at top of if statement
-   * of PriceOracle2.
-   *
-   * This must use the token address, not the cToken address.
-   *
-   * Note this returns the value already factoring in token decimals and wei, therefore
-   * we only need to divide by the mantissa, 10^18 */
-  // } else {
-  //   let oracle1 = PriceOracle.bind(priceOracle1Address)
-  //   underlyingPrice = oracle1
-  //     .getPrice(underlyingAddress)
-  //     .toBigDecimal()
-  //     .div(mantissaFactorBD)
-  // }
   return underlyingPrice
 }
 
@@ -128,19 +91,8 @@ function getUsdcPriceNOTE(blockNumber: i32): BigDecimal {
   if (oracleAddress.toHex() == '0x') {
     oracleAddress = Address.fromString(BaseV1Router_Address)
   }
-  // log.info("getUSDCPrice - {}", [oracleAddress.toHex()])
-  // let priceOracle1Address = Address.fromString('02557a5e05defeffd4cae6d83ea3d173b272c904')
-  let USDCAddress = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48 '
   let usdPrice: BigDecimal = NegOne_BD
 
-  // See notes on block number if statement in getTokenPrices()
-  /*
-  todo:
-    1. what is the abi of price oracle is it the same as base v1 router
-    2. how does this mantissa decimal factor work
-    3. is this the correct if block or do we have to use the next one
-  */
-  // if (blockNumber > 7715908) {
   log.info('MARKETS::getUsdcPriceNOTE {}', [oracleAddress.toHex()])
   let oracle = PriceOracle.bind(oracleAddress)
   let mantissaDecimalFactorUSDC = 18 + 18 - 6
@@ -152,26 +104,13 @@ function getUsdcPriceNOTE(blockNumber: i32): BigDecimal {
   if (!underlyingPriceResult.reverted) {
     usdPrice = underlyingPriceResult.value.toBigDecimal().div(bdFactorUSDC)
   }
-  // usdPrice = oracle
-  //   .getUnderlyingPrice(Address.fromString(cUSDC_ADDRESS))
-  //   .toBigDecimal()
-  //   .div(bdFactorUSDC)
-  // } else {
-  //   let oracle1 = PriceOracle.bind(priceOracle1Address)
-  //   usdPrice = oracle1
-  //     .getPrice(Address.fromString(USDCAddress))
-  //     .toBigDecimal()
-  //     .div(mantissaFactorBD)
-  // }
+
   return usdPrice
 }
 
 export function createMarket(marketAddress: string): Market {
-  log.info('MARKETS::createMarket', [])
   let market: Market
   let contract = CToken.bind(Address.fromString(marketAddress))
-
-  log.info('MARKETS::createMarket->1', [])
 
   // It is CETH, which has a slightly different interface
   if (marketAddress == cCANTO_ADDRESS) {
@@ -389,7 +328,6 @@ export function updateMarket(
   blockNumber: i32,
   blockTimestamp: i32,
 ): Market | null {
-  // log.info("MARKETS::updateMarket {} {} {}", [marketAddress.toHex(), blockNumber.toString(), blockTimestamp.toString()])
   let marketID = marketAddress.toHex()
   let market = Market.load(marketID)
   if (market == null) {
