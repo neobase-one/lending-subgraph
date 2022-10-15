@@ -408,6 +408,16 @@ export function updateMarket(
 
     // if cETH, we only update USD price
     if (market.id == cCANTO_ADDRESS) {
+      let tokenPriceNote = getTokenPrice(
+        blockNumber,
+        contractAddress,
+        market.underlyingAddress as Address,
+        market.underlyingDecimals,
+      )
+      if (tokenPriceNote.equals(NegOne_BD)) {
+        return null
+      }
+      market.underlyingPrice = tokenPriceNote.truncate(market.underlyingDecimals)
       market.underlyingPriceUSD = market.underlyingPrice
         .div(usdPriceInNote)
         .truncate(market.underlyingDecimals)
