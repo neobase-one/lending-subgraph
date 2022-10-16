@@ -150,3 +150,60 @@ type AccountCToken @entity {
     # lifetimeBorrowInterestAccrued: BigDecimal!
     # FORMULA: lifetimeBorrowInterestAccrued = borrowBalanceUnderlying - totalUnderlyingBorrowed + totalUnderlyingRepaid
 }
+
+type ComptrollerDayData @entity {
+    id: ID!
+    date: Int!
+    # dailySupplyETH: BigDecimal!
+    # dailySupplyUSD: BigDecimal!
+    # dailyBorrowETH: BigDecimal!
+    # dailyBorrowUSD: BigDecimal!
+    dailyVolumeETH: BigDecimal!
+    dailyVolumeUSD: BigDecimal!
+    dailyTxns: BigInt!
+
+    totalVolumeETH: BigDecimal!
+    totalVolumeUSD: BigDecimal!
+    totalLiquidityETH: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
+}
+
+type MarketDayData @entity {
+    id: ID!
+    date: Int!
+    # market: Market!
+    # dailySupplyETH: BigDecimal!
+    # dailySupplyUSD: BigDecimal!
+    # dailyBorrowETH: BigDecimal!
+    # dailyBorrowUSD: BigDecimal!
+    dailyVolumeETH: BigDecimal!
+    dailyVolumeUSD: BigDecimal!
+    dailyTxns: BigInt!
+
+    totalVolumeETH: BigDecimal!
+    totalVolumeUSD: BigDecimal!
+    totalLiquidityETH: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
+    # dailyBorrowAPR: BigDecimal!
+    # dailySupplyAPR: BigDecimal!
+}
+
+type MarketHourData @entity {
+    id: ID!
+    hourStartUnix: Int!
+    # market: Market!
+    # hourlySupplyETH: BigDecimal!
+    # hourlySupplyUSD: BigDecimal!
+    # hourlyBorrowETH: BigDecimal!
+    # hourlyBorrowUSD: BigDecimal!
+    hourlyVolumeETH: BigDecimal!
+    hourlyVolumeUSD: BigDecimal!
+    hourlyTxns: BigInt!
+
+    totalVolumeETH: BigDecimal!
+    totalVolumeUSD: BigDecimal!
+    totalLiquidityETH: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
+    # hourlyBorrowAPR: BigDecimal!
+    # hourlySupplyAPR: BigDecimal!
+}
