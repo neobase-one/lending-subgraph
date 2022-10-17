@@ -356,11 +356,13 @@ export function updateMarket(
 
       market.underlyingPrice = tokenPriceNote.truncate(market.underlyingDecimals)
       // if USDC, we only update ETH price
-      if (market.id != cUSDC_ADDRESS) {
-        market.underlyingPriceUSD = market.underlyingPrice
-          .div(usdPriceInNote)
-          .truncate(market.underlyingDecimals)
-      }
+      // if (market.id != cUSDC_ADDRESS) {
+      market.underlyingPriceUSD = market.underlyingPrice
+        .div(usdPriceInNote)
+        .truncate(market.underlyingDecimals)
+      // } else {
+      //   market.underlyin
+      // }
     }
 
     market.accrualBlockNumber = contract.accrualBlockNumber().toI32()
