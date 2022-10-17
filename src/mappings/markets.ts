@@ -179,7 +179,7 @@ export function createMarket(marketAddress: string): Market {
   market.reserveFactor = BigInt.fromI32(0)
   market.underlyingPriceUSD = ZERO_BD
 
-  return market
+  return market as Market
 }
 
 function erc20_decimals(address: string, contract: ERC20): i32 {
@@ -320,7 +320,7 @@ export function updateMarket(
   blockTimestamp: i32,
 ): Market | null {
   let marketID = marketAddress.toHex()
-  let market = Market.load(marketID)
+  let market = Market.load(marketID) as Market
   if (market == null) {
     market = createMarket(marketID)
   }

@@ -1,4 +1,5 @@
 import { EthereumEvent, BigInt, BigDecimal } from '@graphprotocol/graph-ts'
+import { MarketEntered } from '../types/Comptroller/Comptroller'
 import {
   Comptroller,
   ComptrollerDayData,
@@ -19,7 +20,7 @@ export function updateMarketDayData(event: EthereumEvent): MarketDayData {
     .concat(BigInt.fromI32(dayId).toString())
 
   let marketId = event.address.toHexString()
-  let market = Market.load(marketId)
+  let market = Market.load(marketId) as Market
   if (market === null) {
     market = createMarket(marketId)
   }
@@ -61,7 +62,7 @@ export function updateMarketHourData(event: EthereumEvent): MarketHourData {
 
   let marketHourId = marketId.concat('-').concat(BigInt.fromI32(hourIndex).toString())
 
-  let market = Market.load(marketId)
+  let market = Market.load(marketId) as Market
   if (market === null) {
     market = createMarket(marketId)
   }
