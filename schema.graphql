@@ -10,6 +10,8 @@ type Comptroller @entity {
     liquidationIncentive: BigInt
     "Max assets a single user can enter"
     maxAssets: BigInt
+    totalLiquidityNOTE: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
 }
 
 # Market inforamtion for a CToken
@@ -158,13 +160,13 @@ type ComptrollerDayData @entity {
     # dailySupplyUSD: BigDecimal!
     # dailyBorrowETH: BigDecimal!
     # dailyBorrowUSD: BigDecimal!
-    dailyVolumeETH: BigDecimal!
+    dailyVolumeNOTE: BigDecimal!
     dailyVolumeUSD: BigDecimal!
     dailyTxns: BigInt!
 
-    totalVolumeETH: BigDecimal!
+    totalVolumeNOTE: BigDecimal!
     totalVolumeUSD: BigDecimal!
-    totalLiquidityETH: BigDecimal!
+    totalLiquidityNOTE: BigDecimal!
     totalLiquidityUSD: BigDecimal!
 }
 
@@ -176,13 +178,13 @@ type MarketDayData @entity {
     # dailySupplyUSD: BigDecimal!
     # dailyBorrowETH: BigDecimal!
     # dailyBorrowUSD: BigDecimal!
-    dailyVolumeETH: BigDecimal!
+    dailyVolumeNOTE: BigDecimal!
     dailyVolumeUSD: BigDecimal!
     dailyTxns: BigInt!
 
-    totalVolumeETH: BigDecimal!
+    totalVolumeNOTE: BigDecimal!
     totalVolumeUSD: BigDecimal!
-    totalLiquidityETH: BigDecimal!
+    totalLiquidityNOTE: BigDecimal!
     totalLiquidityUSD: BigDecimal!
     # dailyBorrowAPR: BigDecimal!
     # dailySupplyAPR: BigDecimal!
@@ -196,13 +198,13 @@ type MarketHourData @entity {
     # hourlySupplyUSD: BigDecimal!
     # hourlyBorrowETH: BigDecimal!
     # hourlyBorrowUSD: BigDecimal!
-    hourlyVolumeETH: BigDecimal!
+    hourlyVolumeNOTE: BigDecimal!
     hourlyVolumeUSD: BigDecimal!
     hourlyTxns: BigInt!
 
-    totalVolumeETH: BigDecimal!
+    totalVolumeNOTE: BigDecimal!
     totalVolumeUSD: BigDecimal!
-    totalLiquidityETH: BigDecimal!
+    totalLiquidityNOTE: BigDecimal!
     totalLiquidityUSD: BigDecimal!
     # hourlyBorrowAPR: BigDecimal!
     # hourlySupplyAPR: BigDecimal!

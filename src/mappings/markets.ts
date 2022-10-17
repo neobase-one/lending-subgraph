@@ -335,6 +335,14 @@ export function updateMarket(
       return null
     }
 
+    let comptroller = Comptroller.load('1') as Comptroller
+    comptroller.totalLiquidityNOTE = comptroller.totalLiquidityNOTE.minus(
+      getLiquidity(market),
+    )
+    comptroller.totalLiquidityUSD = comptroller.totalLiquidityUSD.minus(
+      getLiquidityUSD(market),
+    )
+
     // if cETH, we only update USD price
     if (market.id == cCANTO_ADDRESS) {
       let tokenPriceNote = getTokenPrice(
@@ -419,9 +427,6 @@ export function updateMarket(
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
 
-    let oldLiquidity = getLiquidity(market)
-    let oldLiquidityUSD = getLiquidityUSD(market)
-
     market.cash = contract
       .getCash()
       .toBigDecimal()
@@ -429,10 +434,15 @@ export function updateMarket(
       .truncate(market.underlyingDecimals)
 
     // change in liquidity from last update - used in comp day data
-    let newLiquidity = getLiquidity(market)
-    let newLiquidityUSD = getLiquidityUSD(market)
-    let deltaLiquidity = newLiquidity.minus(oldLiquidity)
-    let deltaLiquidityUSD = newLiquidityUSD.minus(oldLiquidityUSD)
+    if (market.id !== cNOTE_ADDRESS) {
+      comptroller.totalLiquidityNOTE = comptroller.totalLiquidityNOTE.plus(
+        getLiquidity(market),
+      )
+      comptroller.totalLiquidityUSD = comptroller.totalLiquidityUSD.plus(
+        getLiquidityUSD(market),
+      )
+      comptroller.save()
+    }
 
     // SUPPLY
     let supplyRateResult = contract.try_supplyRatePerBlock()
@@ -511,9 +521,7 @@ export function updateMarket(
 
     // update metrics
     // since cNOTE doesnt account for liquidity
-    if (market.id !== cNOTE_ADDRESS) {
-      updateComptrollerDayData(event, deltaLiquidity, deltaLiquidityUSD)
-    }
+    updateComptrollerDayData(event)
     updateMarketDayData(event)
     updateMarketHourData(event)
   }
