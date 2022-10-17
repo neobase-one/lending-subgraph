@@ -510,7 +510,10 @@ export function updateMarket(
     market.save()
 
     // update metrics
-    updateComptrollerDayData(event, deltaLiquidity, deltaLiquidityUSD)
+    // since cNOTE doesnt account for liquidity
+    if (market.id !== cNOTE_ADDRESS) {
+      updateComptrollerDayData(event, deltaLiquidity, deltaLiquidityUSD)
+    }
     updateMarketDayData(event)
     updateMarketHourData(event)
   }
