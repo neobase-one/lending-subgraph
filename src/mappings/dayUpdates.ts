@@ -20,7 +20,7 @@ export function updateMarketDayData(event: EthereumEvent): MarketDayData {
 
   let marketId = event.address.toHexString()
   let market = Market.load(marketId)
-  if (market == null) {
+  if (market === null) {
     market = createMarket(marketId)
   }
   let marketDayData = MarketDayData.load(marketDayId)
@@ -28,6 +28,8 @@ export function updateMarketDayData(event: EthereumEvent): MarketDayData {
   if (marketDayData === null) {
     marketDayData = new MarketDayData(marketDayId)
     marketDayData.date = dayStartTimestamp
+    marketDayData.market = market.id
+
     marketDayData.dailyVolumeETH = ZERO_BD
     marketDayData.dailyVolumeUSD = ZERO_BD
 
@@ -69,6 +71,7 @@ export function updateMarketHourData(event: EthereumEvent): MarketHourData {
   let marketHourData = MarketHourData.load(marketHourId)
   if (marketHourData === null) {
     marketHourData = new MarketHourData(marketHourId)
+    marketHourData.market = market.id
     marketHourData.hourStartUnix = hourStartUnix
     marketHourData.hourlyVolumeETH = ZERO_BD
     marketHourData.hourlyVolumeUSD = ZERO_BD

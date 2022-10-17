@@ -171,7 +171,7 @@ type ComptrollerDayData @entity {
 type MarketDayData @entity {
     id: ID!
     date: Int!
-    # market: Market!
+    market: Market!
     # dailySupplyETH: BigDecimal!
     # dailySupplyUSD: BigDecimal!
     # dailyBorrowETH: BigDecimal!
@@ -191,7 +191,7 @@ type MarketDayData @entity {
 type MarketHourData @entity {
     id: ID!
     hourStartUnix: Int!
-    # market: Market!
+    market: Market!
     # hourlySupplyETH: BigDecimal!
     # hourlySupplyUSD: BigDecimal!
     # hourlyBorrowETH: BigDecimal!
