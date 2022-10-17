@@ -1,4 +1,4 @@
-import { EthereumEvent, BigInt } from '@graphprotocol/graph-ts'
+import { EthereumEvent, BigInt, BigDecimal } from '@graphprotocol/graph-ts'
 import {
   Comptroller,
   ComptrollerDayData,
@@ -7,7 +7,7 @@ import {
   MarketHourData,
 } from '../types/schema'
 import { Comptroller_Address, ONE_BI, ZERO_BD, ZERO_BI } from './consts'
-import { createMarket } from './markets'
+import { createMarket, getLiquidity, getLiquidityUSD } from './markets'
 
 export function updateMarketDayData(event: EthereumEvent): MarketDayData {
   let timestamp = event.block.timestamp.toI32()
@@ -43,10 +43,8 @@ export function updateMarketDayData(event: EthereumEvent): MarketDayData {
   }
 
   // todo: update fields daily volume fields
-  let liquidity = market.cash.times(market.underlyingPrice)
-  let liquidityUSD = market.cash.times(market.underlyingPriceUSD)
-  marketDayData.totalLiquidityETH = liquidity
-  marketDayData.totalLiquidityUSD = liquidityUSD
+  marketDayData.totalLiquidityETH = getLiquidity(market)
+  marketDayData.totalLiquidityUSD = getLiquidityUSD(market)
 
   marketDayData.dailyTxns = marketDayData.dailyTxns.plus(ONE_BI)
   marketDayData.save()
@@ -87,10 +85,8 @@ export function updateMarketHourData(event: EthereumEvent): MarketHourData {
 
   // todo: update volume
 
-  let liquidity = market.cash.times(market.underlyingPrice)
-  let liquidityUSD = market.cash.times(market.underlyingPriceUSD)
-  marketHourData.totalLiquidityETH = liquidity
-  marketHourData.totalLiquidityUSD = liquidityUSD
+  marketHourData.totalLiquidityETH = getLiquidity(market)
+  marketHourData.totalLiquidityUSD = getLiquidityUSD(market)
 
   marketHourData.hourlyTxns = marketHourData.hourlyTxns.plus(ONE_BI)
 
@@ -98,7 +94,11 @@ export function updateMarketHourData(event: EthereumEvent): MarketHourData {
   return marketHourData as MarketHourData
 }
 
-export function updateComptrollerDayData(event: EthereumEvent): ComptrollerDayData {
+export function updateComptrollerDayData(
+  event: EthereumEvent,
+  deltaLiquidity: BigDecimal,
+  deltaLiquidityUSD: BigDecimal,
+): ComptrollerDayData {
   // let comptroller = Comptroller.load(Comptroller_Address)
 
   let timestamp = event.block.timestamp.toI32()
@@ -124,5 +124,9 @@ export function updateComptrollerDayData(event: EthereumEvent): ComptrollerDayDa
   // todo: update volume, liquidity
   compDayData.dailyTxns = compDayData.dailyTxns.plus(ONE_BI)
 
+  compDayData.totalLiquidityETH = compDayData.totalLiquidityETH.plus(deltaLiquidity)
+  compDayData.totalLiquidityUSD = compDayData.totalLiquidityUSD.plus(deltaLiquidityUSD)
+
+  compDayData.save()
   return compDayData as ComptrollerDayData
 }

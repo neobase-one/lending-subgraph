@@ -305,6 +305,14 @@ function cToken_underlyingAddress(marketAddress: string, contract: CToken): Addr
   return Address.fromString(underlyingAddress)
 }
 
+export function getLiquidity(market: Market): BigDecimal {
+  return market.cash.times(market.underlyingPrice)
+}
+
+export function getLiquidityUSD(market: Market): BigDecimal {
+  return market.cash.times(market.underlyingPriceUSD)
+}
+
 export function updateMarket(
   event: EthereumEvent,
   marketAddress: Address,
@@ -411,11 +419,20 @@ export function updateMarket(
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
 
+    let oldLiquidity = getLiquidity(market)
+    let oldLiquidityUSD = getLiquidityUSD(market)
+
     market.cash = contract
       .getCash()
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
+
+    // change in liquidity from last update - used in comp day data
+    let newLiquidity = getLiquidity(market)
+    let newLiquidityUSD = getLiquidityUSD(market)
+    let deltaLiquidity = newLiquidity.minus(oldLiquidity)
+    let deltaLiquidityUSD = newLiquidityUSD.minus(oldLiquidityUSD)
 
     // SUPPLY
     let supplyRateResult = contract.try_supplyRatePerBlock()
@@ -493,7 +510,7 @@ export function updateMarket(
     market.save()
 
     // update metrics
-    updateComptrollerDayData(event)
+    updateComptrollerDayData(event, deltaLiquidity, deltaLiquidityUSD)
     updateMarketDayData(event)
     updateMarketHourData(event)
   }
