@@ -434,7 +434,7 @@ export function updateMarket(
       .truncate(market.underlyingDecimals)
 
     // change in liquidity from last update - used in comp day data
-    if (market.id !== cNOTE_ADDRESS) {
+    if (market.id != cNOTE_ADDRESS) {
       comptroller.totalLiquidityNOTE = comptroller.totalLiquidityNOTE.plus(
         getLiquidity(market),
       )
