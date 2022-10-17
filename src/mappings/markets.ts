@@ -1,13 +1,7 @@
 /* eslint-disable prefer-const */ // to satisfy AS compiler
 
 // For each division by 10, add one to exponent to truncate one significant figure
-import {
-  Address,
-  BigDecimal,
-  BigInt,
-  EthereumEvent,
-  log,
-} from '@graphprotocol/graph-ts/index'
+import { Address, BigDecimal, BigInt, EthereumEvent, log } from '@graphprotocol/graph-ts'
 import { Market, Comptroller } from '../types/schema'
 import { PriceOracle } from '../types/cNote/PriceOracle'
 import { ERC20 } from '../types/cNote/ERC20'
@@ -495,12 +489,12 @@ export function updateMarket(
 
     // Must convert to BigDecimal, and remove 10^18 that is used for Exp in Compound Solidity
     market.save()
-  }
 
-  // update metrics
-  updateComptrollerDayData(event)
-  updateMarketDayData(event)
-  updateMarketHourData(event)
+    // update metrics
+    updateComptrollerDayData(event)
+    updateMarketDayData(event)
+    updateMarketHourData(event)
+  }
 
   return market as Market
 }

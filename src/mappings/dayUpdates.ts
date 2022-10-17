@@ -1,5 +1,4 @@
-import { EthereumEvent } from '@graphprotocol/graph-ts'
-import { createMappedTypeNode } from 'typescript'
+import { EthereumEvent, BigInt } from '@graphprotocol/graph-ts'
 import {
   Comptroller,
   ComptrollerDayData,
@@ -42,8 +41,10 @@ export function updateMarketDayData(event: EthereumEvent): MarketDayData {
   }
 
   // todo: update fields daily volume fields
-  marketDayData.totalLiquidityETH = market.liquidity
-  marketDayData.totalLiquidityUSD = market.liquidityUSD
+  let liquidity = market.cash.times(market.underlyingPrice)
+  let liquidityUSD = market.cash.times(market.underlyingPriceUSD)
+  marketDayData.totalLiquidityETH = liquidity
+  marketDayData.totalLiquidityUSD = liquidityUSD
 
   marketDayData.dailyTxns = marketDayData.dailyTxns.plus(ONE_BI)
   marketDayData.save()
@@ -83,8 +84,10 @@ export function updateMarketHourData(event: EthereumEvent): MarketHourData {
 
   // todo: update volume
 
-  marketHourData.totalLiquidityETH = market.liquidity
-  marketHourData.totalLiquidityUSD = market.liquidityUSD
+  let liquidity = market.cash.times(market.underlyingPrice)
+  let liquidityUSD = market.cash.times(market.underlyingPriceUSD)
+  marketHourData.totalLiquidityETH = liquidity
+  marketHourData.totalLiquidityUSD = liquidityUSD
 
   marketHourData.hourlyTxns = marketHourData.hourlyTxns.plus(ONE_BI)
 

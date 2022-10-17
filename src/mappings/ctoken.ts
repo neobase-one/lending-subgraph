@@ -231,6 +231,7 @@ export function handleTransfer(event: Transfer): void {
 
   if (market.accrualBlockNumber != event.block.number.toI32()) {
     market = updateMarket(
+      event,
       event.address,
       event.block.number.toI32(),
       event.block.timestamp.toI32(),
@@ -330,7 +331,12 @@ export function handleTransfer(event: Transfer): void {
 }
 
 export function handleAccrueInterest(event: AccrueInterest): void {
-  updateMarket(event.address, event.block.number.toI32(), event.block.timestamp.toI32())
+  updateMarket(
+    event,
+    event.address,
+    event.block.number.toI32(),
+    event.block.timestamp.toI32(),
+  )
 }
 
 export function handleNewReserveFactor(event: NewReserveFactor): void {

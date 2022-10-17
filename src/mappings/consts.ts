@@ -1,4 +1,4 @@
-import { BigDecimal } from '@graphprotocol/graph-ts'
+import { BigDecimal, BigInt } from '@graphprotocol/graph-ts'
 import { exponentToBigDecimal } from './helpers'
 
 /*
@@ -40,6 +40,9 @@ export const wCANTO_ADDRESS = '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B'
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'
 
 export const BaseV1Router_Address = '0x8fa61F21Fb514d2914a48B29810900Da876E295b'
+
+export let ZERO_BI = BigInt.fromI32(0)
+export let ONE_BI = BigInt.fromI32(1)
 
 export let ZERO_BD = BigDecimal.fromString('0')
 export let ONE_BD = BigDecimal.fromString('1')
