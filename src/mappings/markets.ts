@@ -313,7 +313,7 @@ export function getLiquidityUSD(market: Market): BigDecimal {
   return market.cash.times(market.underlyingPriceUSD)
 }
 
-export function getVolumePrice(tokenAmount: BigInt, market: Market) {
+export function getVolumePrice(tokenAmount: BigInt, market: Market): BigDecimal {
   let amount = tokenAmount
     .toBigDecimal()
     .div(exponentToBigDecimal(market.underlyingDecimals))
@@ -321,7 +321,7 @@ export function getVolumePrice(tokenAmount: BigInt, market: Market) {
   return amount.times(market.underlyingPrice)
 }
 
-export function getVolumePriceUSD(tokenAmount: BigInt, market: Market) {
+export function getVolumePriceUSD(tokenAmount: BigInt, market: Market): BigDecimal {
   let amount = tokenAmount
     .toBigDecimal()
     .div(exponentToBigDecimal(market.underlyingDecimals))

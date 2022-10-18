@@ -160,8 +160,10 @@ type ComptrollerDayData @entity {
     # dailySupplyUSD: BigDecimal!
     # dailyBorrowETH: BigDecimal!
     # dailyBorrowUSD: BigDecimal!
-    dailyVolumeNOTE: BigDecimal!
-    dailyVolumeUSD: BigDecimal!
+    dailySupplyVolumeNOTE: BigDecimal!
+    dailySupplyVolumeUSD: BigDecimal!
+    dailyBorrowVolumeNOTE: BigDecimal!
+    dailyBorrowVolumeUSD: BigDecimal!
     dailyTxns: BigInt!
 
     totalVolumeNOTE: BigDecimal!
@@ -178,8 +180,10 @@ type MarketDayData @entity {
     # dailySupplyUSD: BigDecimal!
     # dailyBorrowETH: BigDecimal!
     # dailyBorrowUSD: BigDecimal!
-    dailyVolumeNOTE: BigDecimal!
-    dailyVolumeUSD: BigDecimal!
+    dailySupplyVolumeNOTE: BigDecimal!
+    dailySupplyVolumeUSD: BigDecimal!
+    dailyBorrowVolumeNOTE: BigDecimal!
+    dailyBorrowVolumeUSD: BigDecimal!
     dailyTxns: BigInt!
 
     totalVolumeNOTE: BigDecimal!
@@ -198,8 +202,10 @@ type MarketHourData @entity {
     # hourlySupplyUSD: BigDecimal!
     # hourlyBorrowETH: BigDecimal!
     # hourlyBorrowUSD: BigDecimal!
-    hourlyVolumeNOTE: BigDecimal!
-    hourlyVolumeUSD: BigDecimal!
+    hourlySupplyVolumeNOTE: BigDecimal!
+    hourlySupplyVolumeUSD: BigDecimal!
+    hourlyBorrowVolumeNOTE: BigDecimal!
+    hourlyBorrowVolumeUSD: BigDecimal!
     hourlyTxns: BigInt!
 
     totalVolumeNOTE: BigDecimal!

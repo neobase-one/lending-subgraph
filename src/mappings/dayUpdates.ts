@@ -30,8 +30,10 @@ export function updateMarketDayData(event: EthereumEvent): MarketDayData {
     marketDayData.date = dayStartTimestamp
     marketDayData.market = market.id
 
-    marketDayData.dailyVolumeNOTE = ZERO_BD
-    marketDayData.dailyVolumeUSD = ZERO_BD
+    marketDayData.dailySupplyVolumeNOTE = ZERO_BD
+    marketDayData.dailySupplyVolumeUSD = ZERO_BD
+    marketDayData.dailyBorrowVolumeNOTE = ZERO_BD
+    marketDayData.dailyBorrowVolumeUSD = ZERO_BD
 
     marketDayData.totalVolumeNOTE = ZERO_BD
     marketDayData.totalVolumeUSD = ZERO_BD
@@ -71,8 +73,11 @@ export function updateMarketHourData(event: EthereumEvent): MarketHourData {
     marketHourData = new MarketHourData(marketHourId)
     marketHourData.market = market.id
     marketHourData.hourStartUnix = hourStartUnix
-    marketHourData.hourlyVolumeNOTE = ZERO_BD
-    marketHourData.hourlyVolumeUSD = ZERO_BD
+
+    marketHourData.hourlySupplyVolumeNOTE = ZERO_BD
+    marketHourData.hourlySupplyVolumeUSD = ZERO_BD
+    marketHourData.hourlyBorrowVolumeNOTE = ZERO_BD
+    marketHourData.hourlyBorrowVolumeUSD = ZERO_BD
 
     marketHourData.totalVolumeNOTE = ZERO_BD
     marketHourData.totalVolumeUSD = ZERO_BD
@@ -106,8 +111,11 @@ export function updateComptrollerDayData(event: EthereumEvent): ComptrollerDayDa
   if (compDayData === null) {
     compDayData = new ComptrollerDayData(dayId.toString())
     compDayData.date = dayStartTimestamp
-    compDayData.dailyVolumeNOTE = ZERO_BD
-    compDayData.dailyVolumeUSD = ZERO_BD
+
+    compDayData.dailySupplyVolumeNOTE = ZERO_BD
+    compDayData.dailySupplyVolumeUSD = ZERO_BD
+    compDayData.dailyBorrowVolumeNOTE = ZERO_BD
+    compDayData.dailyBorrowVolumeUSD = ZERO_BD
 
     compDayData.totalVolumeNOTE = ZERO_BD
     compDayData.totalVolumeUSD = ZERO_BD
