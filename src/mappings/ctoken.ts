@@ -116,7 +116,7 @@ export function handleBorrow(event: Borrow): void {
     market.save()
   }
 
-  // todo - volume verify
+  // todo - volume verify - borrow
   let comptrollerDayData = updateComptrollerDayData(event)
   let marketHourData = updateMarketHourData(event)
   let marketDayData = updateMarketDayData(event)
@@ -195,7 +195,7 @@ export function handleRepayBorrow(event: RepayBorrow): void {
     market.save()
   }
 
-  // todo - volume verify
+  // todo - volume verify - borrow
   let comptrollerDayData = updateComptrollerDayData(event)
   let marketHourData = updateMarketHourData(event)
   let marketDayData = updateMarketDayData(event)
@@ -372,6 +372,53 @@ export function handleTransfer(event: Transfer): void {
       market.numberOfSuppliers = market.numberOfSuppliers + 1
       market.save()
     }
+
+    // todo - volume verify - supply
+    if (event.params.from.toHex() == event.address.toHex()) {
+      let comptrollerDayData = updateComptrollerDayData(event)
+      let marketHourData = updateMarketHourData(event)
+      let marketDayData = updateMarketDayData(event)
+
+      let volume = getVolumePrice(event.params.amount, market)
+      let volumeUSD = getVolumePriceUSD(event.params.amount, market)
+
+      comptrollerDayData.dailyVolumeNOTE = comptrollerDayData.dailyVolumeNOTE.plus(volume)
+      comptrollerDayData.dailyVolumeUSD = comptrollerDayData.dailyVolumeUSD.plus(
+        volumeUSD,
+      )
+      comptrollerDayData.save()
+
+      marketHourData.hourlyVolumeNOTE = marketHourData.hourlyVolumeNOTE.plus(volume)
+      marketHourData.hourlyVolumeUSD = marketHourData.hourlyVolumeUSD.plus(volumeUSD)
+      marketHourData.save()
+
+      marketDayData.dailyVolumeNOTE = marketDayData.dailyVolumeNOTE.plus(volume)
+      marketDayData.dailyVolumeUSD = marketDayData.dailyVolumeUSD.plus(volumeUSD)
+      marketDayData.save()
+    } else if (event.params.to.toHex() == event.address.toHex()) {
+      let comptrollerDayData = updateComptrollerDayData(event)
+      let marketHourData = updateMarketHourData(event)
+      let marketDayData = updateMarketDayData(event)
+
+      let volume = getVolumePrice(event.params.amount, market)
+      let volumeUSD = getVolumePriceUSD(event.params.amount, market)
+
+      comptrollerDayData.dailyVolumeNOTE = comptrollerDayData.dailyVolumeNOTE.minus(
+        volume,
+      )
+      comptrollerDayData.dailyVolumeUSD = comptrollerDayData.dailyVolumeUSD.minus(
+        volumeUSD,
+      )
+      comptrollerDayData.save()
+
+      marketHourData.hourlyVolumeNOTE = marketHourData.hourlyVolumeNOTE.minus(volume)
+      marketHourData.hourlyVolumeUSD = marketHourData.hourlyVolumeUSD.minus(volumeUSD)
+      marketHourData.save()
+
+      marketDayData.dailyVolumeNOTE = marketDayData.dailyVolumeNOTE.minus(volume)
+      marketDayData.dailyVolumeUSD = marketDayData.dailyVolumeUSD.minus(volumeUSD)
+      marketDayData.save()
+    }
   }
 }
 
@@ -383,7 +430,7 @@ export function handleAccrueInterest(event: AccrueInterest): void {
     event.block.timestamp.toI32(),
   )
 
-  // todo - volume verify
+  // todo - volume verify - borrow
   let market = Market.load(event.address.toHex()) as Market
 
   let comptrollerDayData = updateComptrollerDayData(event)
