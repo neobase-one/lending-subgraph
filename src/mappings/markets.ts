@@ -313,6 +313,22 @@ export function getLiquidityUSD(market: Market): BigDecimal {
   return market.cash.times(market.underlyingPriceUSD)
 }
 
+export function getVolumePrice(tokenAmount: BigInt, market: Market) {
+  let amount = tokenAmount
+    .toBigDecimal()
+    .div(exponentToBigDecimal(market.underlyingDecimals))
+    .truncate(market.underlyingDecimals)
+  return amount.times(market.underlyingPrice)
+}
+
+export function getVolumePriceUSD(tokenAmount: BigInt, market: Market) {
+  let amount = tokenAmount
+    .toBigDecimal()
+    .div(exponentToBigDecimal(market.underlyingDecimals))
+    .truncate(market.underlyingDecimals)
+  return amount.times(market.underlyingPriceUSD)
+}
+
 export function updateMarket(
   event: EthereumEvent,
   marketAddress: Address,

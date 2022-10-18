@@ -12,10 +12,15 @@ import {
 } from '../types/cNote/CToken'
 import { AccountCToken, Market, Account } from '../types/schema'
 
-import { createMarket, updateMarket } from './markets'
+import { createMarket, getVolumePrice, getVolumePriceUSD, updateMarket } from './markets'
 import { createAccount, updateCommonCTokenStats, exponentToBigDecimal } from './helpers'
 import { log } from '@graphprotocol/graph-ts'
 import { cTOKEN_DECIMALS, cTOKEN_DECIMALS_BD, ZERO_BD } from './consts'
+import {
+  updateComptrollerDayData,
+  updateMarketDayData,
+  updateMarketHourData,
+} from './dayUpdates'
 
 /* Account supplies assets into market and receives cTokens in exchange
  *
@@ -110,6 +115,26 @@ export function handleBorrow(event: Borrow): void {
     market.numberOfBorrowers = market.numberOfBorrowers + 1
     market.save()
   }
+
+  // todo - volume verify
+  let comptrollerDayData = updateComptrollerDayData(event)
+  let marketHourData = updateMarketHourData(event)
+  let marketDayData = updateMarketDayData(event)
+
+  let volume = getVolumePrice(event.params.borrowAmount, market)
+  let volumeUSD = getVolumePriceUSD(event.params.borrowAmount, market)
+
+  comptrollerDayData.dailyVolumeNOTE = comptrollerDayData.dailyVolumeNOTE.plus(volume)
+  comptrollerDayData.dailyVolumeUSD = comptrollerDayData.dailyVolumeUSD.plus(volumeUSD)
+  comptrollerDayData.save()
+
+  marketHourData.hourlyVolumeNOTE = marketHourData.hourlyVolumeNOTE.plus(volume)
+  marketHourData.hourlyVolumeUSD = marketHourData.hourlyVolumeUSD.plus(volumeUSD)
+  marketHourData.save()
+
+  marketDayData.dailyVolumeNOTE = marketDayData.dailyVolumeNOTE.plus(volume)
+  marketDayData.dailyVolumeUSD = marketDayData.dailyVolumeUSD.plus(volumeUSD)
+  marketDayData.save()
 }
 
 /* Repay some amount borrowed. Anyone can repay anyones balance
@@ -169,6 +194,26 @@ export function handleRepayBorrow(event: RepayBorrow): void {
     market.numberOfBorrowers = market.numberOfBorrowers - 1
     market.save()
   }
+
+  // todo - volume verify
+  let comptrollerDayData = updateComptrollerDayData(event)
+  let marketHourData = updateMarketHourData(event)
+  let marketDayData = updateMarketDayData(event)
+
+  let volume = getVolumePrice(event.params.repayAmount, market)
+  let volumeUSD = getVolumePriceUSD(event.params.repayAmount, market)
+
+  comptrollerDayData.dailyVolumeNOTE = comptrollerDayData.dailyVolumeNOTE.minus(volume)
+  comptrollerDayData.dailyVolumeUSD = comptrollerDayData.dailyVolumeUSD.minus(volumeUSD)
+  comptrollerDayData.save()
+
+  marketHourData.hourlyVolumeNOTE = marketHourData.hourlyVolumeNOTE.minus(volume)
+  marketHourData.hourlyVolumeUSD = marketHourData.hourlyVolumeUSD.minus(volumeUSD)
+  marketHourData.save()
+
+  marketDayData.dailyVolumeNOTE = marketDayData.dailyVolumeNOTE.minus(volume)
+  marketDayData.dailyVolumeUSD = marketDayData.dailyVolumeUSD.minus(volumeUSD)
+  marketDayData.save()
 }
 
 /*
@@ -337,6 +382,28 @@ export function handleAccrueInterest(event: AccrueInterest): void {
     event.block.number.toI32(),
     event.block.timestamp.toI32(),
   )
+
+  // todo - volume verify
+  let market = Market.load(event.address.toHex()) as Market
+
+  let comptrollerDayData = updateComptrollerDayData(event)
+  let marketHourData = updateMarketHourData(event)
+  let marketDayData = updateMarketDayData(event)
+
+  let volume = getVolumePrice(event.params.interestAccumulated, market)
+  let volumeUSD = getVolumePriceUSD(event.params.interestAccumulated, market)
+
+  comptrollerDayData.dailyVolumeNOTE = comptrollerDayData.dailyVolumeNOTE.plus(volume)
+  comptrollerDayData.dailyVolumeUSD = comptrollerDayData.dailyVolumeUSD.plus(volumeUSD)
+  comptrollerDayData.save()
+
+  marketHourData.hourlyVolumeNOTE = marketHourData.hourlyVolumeNOTE.plus(volume)
+  marketHourData.hourlyVolumeUSD = marketHourData.hourlyVolumeUSD.plus(volumeUSD)
+  marketHourData.save()
+
+  marketDayData.dailyVolumeNOTE = marketDayData.dailyVolumeNOTE.plus(volume)
+  marketDayData.dailyVolumeUSD = marketDayData.dailyVolumeUSD.plus(volumeUSD)
+  marketDayData.save()
 }
 
 export function handleNewReserveFactor(event: NewReserveFactor): void {
