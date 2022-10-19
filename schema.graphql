@@ -156,18 +156,13 @@ type AccountCToken @entity {
 type ComptrollerDayData @entity {
     id: ID!
     date: Int!
-    # dailySupplyETH: BigDecimal!
-    # dailySupplyUSD: BigDecimal!
-    # dailyBorrowETH: BigDecimal!
-    # dailyBorrowUSD: BigDecimal!
     dailySupplyVolumeNOTE: BigDecimal!
     dailySupplyVolumeUSD: BigDecimal!
     dailyBorrowVolumeNOTE: BigDecimal!
     dailyBorrowVolumeUSD: BigDecimal!
-    dailyTxns: BigInt!
+    dailySupplyTxns: BigInt!
+    dailyBorrowTxns: BigInt!
 
-    totalVolumeNOTE: BigDecimal!
-    totalVolumeUSD: BigDecimal!
     totalLiquidityNOTE: BigDecimal!
     totalLiquidityUSD: BigDecimal!
 }
@@ -176,18 +171,13 @@ type MarketDayData @entity {
     id: ID!
     date: Int!
     market: Market!
-    # dailySupplyETH: BigDecimal!
-    # dailySupplyUSD: BigDecimal!
-    # dailyBorrowETH: BigDecimal!
-    # dailyBorrowUSD: BigDecimal!
     dailySupplyVolumeNOTE: BigDecimal!
     dailySupplyVolumeUSD: BigDecimal!
     dailyBorrowVolumeNOTE: BigDecimal!
     dailyBorrowVolumeUSD: BigDecimal!
-    dailyTxns: BigInt!
+    dailySupplyTxns: BigInt!
+    dailyBorrowTxns: BigInt!
 
-    totalVolumeNOTE: BigDecimal!
-    totalVolumeUSD: BigDecimal!
     totalLiquidityNOTE: BigDecimal!
     totalLiquidityUSD: BigDecimal!
     # dailyBorrowAPR: BigDecimal!
@@ -198,18 +188,13 @@ type MarketHourData @entity {
     id: ID!
     hourStartUnix: Int!
     market: Market!
-    # hourlySupplyETH: BigDecimal!
-    # hourlySupplyUSD: BigDecimal!
-    # hourlyBorrowETH: BigDecimal!
-    # hourlyBorrowUSD: BigDecimal!
     hourlySupplyVolumeNOTE: BigDecimal!
     hourlySupplyVolumeUSD: BigDecimal!
     hourlyBorrowVolumeNOTE: BigDecimal!
     hourlyBorrowVolumeUSD: BigDecimal!
-    hourlyTxns: BigInt!
+    hourlySupplyTxns: BigInt!
+    hourlyBorrowTxns: BigInt!
 
-    totalVolumeNOTE: BigDecimal!
-    totalVolumeUSD: BigDecimal!
     totalLiquidityNOTE: BigDecimal!
     totalLiquidityUSD: BigDecimal!
     # hourlyBorrowAPR: BigDecimal!

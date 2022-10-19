@@ -35,13 +35,11 @@ export function updateMarketDayData(event: EthereumEvent): MarketDayData {
     marketDayData.dailyBorrowVolumeNOTE = ZERO_BD
     marketDayData.dailyBorrowVolumeUSD = ZERO_BD
 
-    marketDayData.totalVolumeNOTE = ZERO_BD
-    marketDayData.totalVolumeUSD = ZERO_BD
-
     marketDayData.totalLiquidityNOTE = ZERO_BD
     marketDayData.totalLiquidityUSD = ZERO_BD
 
-    marketDayData.dailyTxns = ZERO_BI
+    marketDayData.dailySupplyTxns = ZERO_BI
+    marketDayData.dailyBorrowTxns = ZERO_BI
   }
 
   // todo: update fields daily volume fields
@@ -78,13 +76,11 @@ export function updateMarketHourData(event: EthereumEvent): MarketHourData {
     marketHourData.hourlyBorrowVolumeNOTE = ZERO_BD
     marketHourData.hourlyBorrowVolumeUSD = ZERO_BD
 
-    marketHourData.totalVolumeNOTE = ZERO_BD
-    marketHourData.totalVolumeUSD = ZERO_BD
-
     marketHourData.totalLiquidityNOTE = ZERO_BD
     marketHourData.totalLiquidityUSD = ZERO_BD
 
-    marketHourData.hourlyTxns = ZERO_BI
+    marketHourData.hourlySupplyTxns = ZERO_BI
+    marketHourData.hourlyBorrowTxns = ZERO_BI
   }
 
   // todo: update volume
@@ -114,13 +110,11 @@ export function updateComptrollerDayData(event: EthereumEvent): ComptrollerDayDa
     compDayData.dailyBorrowVolumeNOTE = ZERO_BD
     compDayData.dailyBorrowVolumeUSD = ZERO_BD
 
-    compDayData.totalVolumeNOTE = ZERO_BD
-    compDayData.totalVolumeUSD = ZERO_BD
-
     compDayData.totalLiquidityNOTE = ZERO_BD
     compDayData.totalLiquidityUSD = ZERO_BD
 
-    compDayData.dailyTxns = ZERO_BI
+    compDayData.dailySupplyTxns = ZERO_BI
+    compDayData.dailyBorrowTxns = ZERO_BI
   }
 
   // todo: update volume, liquidity
