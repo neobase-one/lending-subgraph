@@ -457,16 +457,18 @@ export function handleTransfer(event: Transfer): void {
 }
 
 export function handleAccrueInterest(event: AccrueInterest): void {
-  updateMarket(
+  let market = updateMarket(
     event,
     event.address,
     event.block.number.toI32(),
     event.block.timestamp.toI32(),
-  )
+  ) as Market
+
+  if (market == null) {
+    return
+  }
 
   // todo - volume verify - borrow
-  let market = Market.load(event.address.toHex()) as Market
-
   let comptrollerDayData = updateComptrollerDayData(event)
   let marketHourData = updateMarketHourData(event)
   let marketDayData = updateMarketDayData(event)
