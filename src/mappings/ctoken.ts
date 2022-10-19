@@ -15,7 +15,7 @@ import { AccountCToken, Market, Account } from '../types/schema'
 import { createMarket, getVolumePrice, getVolumePriceUSD, updateMarket } from './markets'
 import { createAccount, updateCommonCTokenStats, exponentToBigDecimal } from './helpers'
 import { log } from '@graphprotocol/graph-ts'
-import { cTOKEN_DECIMALS, cTOKEN_DECIMALS_BD, ZERO_BD } from './consts'
+import { cTOKEN_DECIMALS, cTOKEN_DECIMALS_BD, ONE_BI, ZERO_BD } from './consts'
 import {
   updateComptrollerDayData,
   updateMarketDayData,
@@ -124,6 +124,7 @@ export function handleBorrow(event: Borrow): void {
   let volume = getVolumePrice(event.params.borrowAmount, market)
   let volumeUSD = getVolumePriceUSD(event.params.borrowAmount, market)
 
+  comptrollerDayData.dailyTxns = comptrollerDayData.dailyTxns.plus(ONE_BI)
   comptrollerDayData.dailyBorrowVolumeNOTE = comptrollerDayData.dailyBorrowVolumeNOTE.plus(
     volume,
   )
@@ -132,6 +133,7 @@ export function handleBorrow(event: Borrow): void {
   )
   comptrollerDayData.save()
 
+  marketHourData.hourlyTxns = marketHourData.hourlyTxns.plus(ONE_BI)
   marketHourData.hourlyBorrowVolumeNOTE = marketHourData.hourlyBorrowVolumeNOTE.plus(
     volume,
   )
@@ -140,6 +142,7 @@ export function handleBorrow(event: Borrow): void {
   )
   marketHourData.save()
 
+  marketDayData.dailyTxns = marketDayData.dailyTxns.plus(ONE_BI)
   marketDayData.dailyBorrowVolumeNOTE = marketDayData.dailyBorrowVolumeNOTE.plus(volume)
   marketDayData.dailyBorrowVolumeUSD = marketDayData.dailyBorrowVolumeUSD.plus(volumeUSD)
   marketDayData.save()
@@ -211,6 +214,7 @@ export function handleRepayBorrow(event: RepayBorrow): void {
   let volume = getVolumePrice(event.params.repayAmount, market)
   let volumeUSD = getVolumePriceUSD(event.params.repayAmount, market)
 
+  comptrollerDayData.dailyTxns = comptrollerDayData.dailyTxns.plus(ONE_BI)
   comptrollerDayData.dailyBorrowVolumeNOTE = comptrollerDayData.dailyBorrowVolumeNOTE.minus(
     volume,
   )
@@ -219,6 +223,7 @@ export function handleRepayBorrow(event: RepayBorrow): void {
   )
   comptrollerDayData.save()
 
+  marketHourData.hourlyTxns = marketHourData.hourlyTxns.plus(ONE_BI)
   marketHourData.hourlyBorrowVolumeNOTE = marketHourData.hourlyBorrowVolumeNOTE.minus(
     volume,
   )
@@ -227,6 +232,7 @@ export function handleRepayBorrow(event: RepayBorrow): void {
   )
   marketHourData.save()
 
+  marketDayData.dailyTxns = marketDayData.dailyTxns.plus(ONE_BI)
   marketDayData.dailyBorrowVolumeNOTE = marketDayData.dailyBorrowVolumeNOTE.minus(volume)
   marketDayData.dailyBorrowVolumeUSD = marketDayData.dailyBorrowVolumeUSD.minus(volumeUSD)
   marketDayData.save()
@@ -398,6 +404,7 @@ export function handleTransfer(event: Transfer): void {
       let volume = getVolumePrice(event.params.amount, market as Market)
       let volumeUSD = getVolumePriceUSD(event.params.amount, market as Market)
 
+      comptrollerDayData.dailyTxns = comptrollerDayData.dailyTxns.plus(ONE_BI)
       comptrollerDayData.dailySupplyVolumeNOTE = comptrollerDayData.dailySupplyVolumeNOTE.plus(
         volume,
       )
@@ -406,6 +413,7 @@ export function handleTransfer(event: Transfer): void {
       )
       comptrollerDayData.save()
 
+      marketHourData.hourlyTxns = marketHourData.hourlyTxns.plus(ONE_BI)
       marketHourData.hourlySupplyVolumeNOTE = marketHourData.hourlySupplyVolumeNOTE.plus(
         volume,
       )
@@ -414,6 +422,7 @@ export function handleTransfer(event: Transfer): void {
       )
       marketHourData.save()
 
+      marketDayData.dailyTxns = marketDayData.dailyTxns.plus(ONE_BI)
       marketDayData.dailySupplyVolumeNOTE = marketDayData.dailySupplyVolumeNOTE.plus(
         volume,
       )
@@ -429,6 +438,7 @@ export function handleTransfer(event: Transfer): void {
       let volume = getVolumePrice(event.params.amount, market as Market)
       let volumeUSD = getVolumePriceUSD(event.params.amount, market as Market)
 
+      comptrollerDayData.dailyTxns = comptrollerDayData.dailyTxns.plus(ONE_BI)
       comptrollerDayData.dailySupplyVolumeNOTE = comptrollerDayData.dailySupplyVolumeNOTE.minus(
         volume,
       )
@@ -437,6 +447,7 @@ export function handleTransfer(event: Transfer): void {
       )
       comptrollerDayData.save()
 
+      marketHourData.hourlyTxns = marketHourData.hourlyTxns.plus(ONE_BI)
       marketHourData.hourlySupplyVolumeNOTE = marketHourData.hourlySupplyVolumeNOTE.minus(
         volume,
       )
@@ -445,6 +456,7 @@ export function handleTransfer(event: Transfer): void {
       )
       marketHourData.save()
 
+      marketDayData.dailyTxns = marketDayData.dailyTxns.plus(ONE_BI)
       marketDayData.dailySupplyVolumeNOTE = marketDayData.dailySupplyVolumeNOTE.minus(
         volume,
       )
@@ -476,6 +488,7 @@ export function handleAccrueInterest(event: AccrueInterest): void {
   let volume = getVolumePrice(event.params.interestAccumulated, market)
   let volumeUSD = getVolumePriceUSD(event.params.interestAccumulated, market)
 
+  comptrollerDayData.dailyTxns = comptrollerDayData.dailyTxns.plus(ONE_BI)
   comptrollerDayData.dailyBorrowVolumeNOTE = comptrollerDayData.dailyBorrowVolumeNOTE.plus(
     volume,
   )
@@ -484,6 +497,7 @@ export function handleAccrueInterest(event: AccrueInterest): void {
   )
   comptrollerDayData.save()
 
+  marketHourData.hourlyTxns = marketHourData.hourlyTxns.plus(ONE_BI)
   marketHourData.hourlyBorrowVolumeNOTE = marketHourData.hourlyBorrowVolumeNOTE.plus(
     volume,
   )
@@ -492,6 +506,7 @@ export function handleAccrueInterest(event: AccrueInterest): void {
   )
   marketHourData.save()
 
+  marketDayData.dailyTxns = marketDayData.dailyTxns.plus(ONE_BI)
   marketDayData.dailyBorrowVolumeNOTE = marketDayData.dailyBorrowVolumeNOTE.plus(volume)
   marketDayData.dailyBorrowVolumeUSD = marketDayData.dailyBorrowVolumeUSD.plus(volumeUSD)
   marketDayData.save()

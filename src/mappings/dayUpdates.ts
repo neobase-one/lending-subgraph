@@ -48,7 +48,6 @@ export function updateMarketDayData(event: EthereumEvent): MarketDayData {
   marketDayData.totalLiquidityNOTE = getLiquidity(market)
   marketDayData.totalLiquidityUSD = getLiquidityUSD(market)
 
-  marketDayData.dailyTxns = marketDayData.dailyTxns.plus(ONE_BI)
   marketDayData.save()
 
   return marketDayData as MarketDayData
@@ -93,8 +92,6 @@ export function updateMarketHourData(event: EthereumEvent): MarketHourData {
   marketHourData.totalLiquidityNOTE = getLiquidity(market)
   marketHourData.totalLiquidityUSD = getLiquidityUSD(market)
 
-  marketHourData.hourlyTxns = marketHourData.hourlyTxns.plus(ONE_BI)
-
   marketHourData.save()
   return marketHourData as MarketHourData
 }
@@ -127,8 +124,6 @@ export function updateComptrollerDayData(event: EthereumEvent): ComptrollerDayDa
   }
 
   // todo: update volume, liquidity
-  compDayData.dailyTxns = compDayData.dailyTxns.plus(ONE_BI)
-
   compDayData.totalLiquidityNOTE = comptroller.totalLiquidityNOTE
   compDayData.totalLiquidityUSD = comptroller.totalLiquidityUSD
 
