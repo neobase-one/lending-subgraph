@@ -38,6 +38,7 @@ import {
   DAYS_IN_YEAR_BD,
   ETH_ADDRESS,
   HUNDRED_BD,
+  LIQUIDITY_WHITELIST,
   MANTISSA_FACTOR,
   MANTISSA_FACTOR_BD,
   NegOne_BD,
@@ -450,7 +451,7 @@ export function updateMarket(
       .truncate(market.underlyingDecimals)
 
     // change in liquidity from last update - used in comp day data
-    if (market.id != cNOTE_ADDRESS) {
+    if (LIQUIDITY_WHITELIST.includes(market.id)) {
       comptroller.totalLiquidityNOTE = comptroller.totalLiquidityNOTE.plus(
         getLiquidity(market),
       )
