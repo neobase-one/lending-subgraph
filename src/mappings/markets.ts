@@ -11,41 +11,21 @@ import { Comptroller as ComptrollerContract } from '../types/Comptroller/Comptro
 import { exponentToBigDecimal, powerToBigDecimal } from './helpers'
 import {
   ADDRESS_ZERO,
-  ATOM_ADDRESS,
   BaseV1Router_Address,
   BLOCK_TIME_BD,
-  CantoAtom_ADDRESS,
-  CantoEth_Address,
-  CantoNote_Address,
-  cATOM_ADDRESS,
-  cCantoAtom_ADDRESS,
-  cCantoEth_ADDRESS,
-  cCantoNote_ADDRESS,
   cCANTO_ADDRESS,
-  cETH_ADDRESS,
-  cNoteUsdc_Address,
-  cNoteUsdt_Address,
-  cNOTE_ADDRESS,
   Comptroller_Address,
   cUSDC_ADDRESS,
-  cUSDT_ADDRESS,
   DAYS_IN_YEAR,
   DAYS_IN_YEAR_BD,
-  ETH_ADDRESS,
   HUNDRED_BD,
   MANTISSA_FACTOR,
   MANTISSA_FACTOR_BD,
   NegOne_BD,
-  NoteUsdc_Address,
-  NoteUsdt_Address,
-  NOTE_ADDRESS,
   ONE_BD,
   SECONDS_IN_DAY_BD,
-  USDC_ADDRESS,
-  USDT_ADDRESS,
   ZERO_BD,
 } from './consts'
-import { TokenDefinition } from './tokenDefinition'
 
 // Used for all cERC20 contracts
 function getTokenPrice(
@@ -178,12 +158,6 @@ export function createMarket(marketAddress: string): Market {
 }
 
 function erc20_decimals(address: string, contract: ERC20): i32 {
-  let staticDefinition = TokenDefinition.fromAddress(Address.fromString(address))
-  if (staticDefinition != null) {
-    return (staticDefinition as TokenDefinition).decimals
-  }
-
-  // HACKY - handling of runtine errors
   let decimals: i32 = 0
   let result = contract.try_decimals()
   if (!result.reverted) {
@@ -194,12 +168,6 @@ function erc20_decimals(address: string, contract: ERC20): i32 {
 }
 
 function erc20_symbol(address: string, contract: ERC20): string {
-  let staticDefinition = TokenDefinition.fromAddress(Address.fromString(address))
-  if (staticDefinition != null) {
-    return (staticDefinition as TokenDefinition).symbol
-  }
-
-  // HACKY - handling of runtine errors
   let symbol = 'N/A'
   let result = contract.try_symbol()
   if (!result.reverted) {
@@ -211,20 +179,9 @@ function erc20_symbol(address: string, contract: ERC20): string {
 
 function cToken_name(marketAddress: string, contract: CToken): string {
   let name = 'N/A'
-  // HACKY - handling of runtine errors
-  if (marketAddress == cNOTE_ADDRESS) {
-    name = 'cNOTE'
-  } else if (marketAddress == cCANTO_ADDRESS) {
-    name = 'cCANTO'
-  } else if (marketAddress == cATOM_ADDRESS) {
-    name = 'cATOM'
-  } else if (marketAddress == cETH_ADDRESS) {
-    name = 'cETH'
-  } else {
-    let result = contract.try_name()
-    if (!result.reverted) {
-      name = result.value
-    }
+  let result = contract.try_name()
+  if (!result.reverted) {
+    name = result.value
   }
 
   return name
@@ -232,34 +189,9 @@ function cToken_name(marketAddress: string, contract: CToken): string {
 
 function cToken_symbol(marketAddress: string, contract: CToken): string {
   let symbol = 'N/A'
-  // HACKY - handling of runtine errors
-  if (marketAddress == cNOTE_ADDRESS) {
-    symbol = 'cNOTE'
-  } else if (marketAddress == cCANTO_ADDRESS) {
-    symbol = 'cCANTO'
-  } else if (marketAddress == cATOM_ADDRESS) {
-    symbol = 'cATOM'
-  } else if (marketAddress == cETH_ADDRESS) {
-    symbol = 'cETH'
-  } else if (marketAddress == cUSDC_ADDRESS) {
-    symbol = 'cUSDC'
-  } else if (marketAddress == cUSDT_ADDRESS) {
-    symbol = 'cUSDT'
-  } else if (marketAddress == cCantoNote_ADDRESS) {
-    symbol = 'cCANTO/NOTE'
-  } else if (marketAddress == cCantoEth_ADDRESS) {
-    symbol = 'cCANTO/ETH'
-  } else if (marketAddress == cCantoAtom_ADDRESS) {
-    symbol = 'cCANTO/ATOM'
-  } else if (marketAddress == cNoteUsdc_Address) {
-    symbol = 'cNOTE/USDC'
-  } else if (marketAddress == cNoteUsdt_Address) {
-    symbol = 'cNOTE/USDT'
-  } else {
-    let result = contract.try_name()
-    if (!result.reverted) {
-      symbol = result.value
-    }
+  let result = contract.try_name()
+  if (!result.reverted) {
+    symbol = result.value
   }
 
   return symbol
@@ -267,34 +199,9 @@ function cToken_symbol(marketAddress: string, contract: CToken): string {
 
 function cToken_underlyingAddress(marketAddress: string, contract: CToken): Address {
   let underlyingAddress = ADDRESS_ZERO
-  // HACKY - handling of runtine errors
-  if (marketAddress == cNOTE_ADDRESS) {
-    underlyingAddress = NOTE_ADDRESS
-  } else if (marketAddress == cCANTO_ADDRESS) {
-    underlyingAddress = ADDRESS_ZERO
-  } else if (marketAddress == cATOM_ADDRESS) {
-    underlyingAddress = ATOM_ADDRESS
-  } else if (marketAddress == cETH_ADDRESS) {
-    underlyingAddress = ETH_ADDRESS
-  } else if (marketAddress == cUSDC_ADDRESS) {
-    underlyingAddress = USDC_ADDRESS
-  } else if (marketAddress == cUSDT_ADDRESS) {
-    underlyingAddress = USDT_ADDRESS
-  } else if (marketAddress == cCantoNote_ADDRESS) {
-    underlyingAddress = CantoNote_Address
-  } else if (marketAddress == cCantoEth_ADDRESS) {
-    underlyingAddress = CantoEth_Address
-  } else if (marketAddress == cCantoAtom_ADDRESS) {
-    underlyingAddress = CantoAtom_ADDRESS
-  } else if (marketAddress == cNoteUsdc_Address) {
-    underlyingAddress = NoteUsdc_Address
-  } else if (marketAddress == cNoteUsdt_Address) {
-    underlyingAddress = NoteUsdt_Address
-  } else {
-    let underlyingAddressResult = contract.try_underlying()
-    if (!underlyingAddressResult.reverted) {
-      underlyingAddress = underlyingAddressResult.value.toHex()
-    }
+  let underlyingAddressResult = contract.try_underlying()
+  if (!underlyingAddressResult.reverted) {
+    underlyingAddress = underlyingAddressResult.value.toHex()
   }
 
   return Address.fromString(underlyingAddress)
