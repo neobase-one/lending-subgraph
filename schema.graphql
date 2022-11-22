@@ -156,16 +156,13 @@ type AccountCToken @entity {
 type ComptrollerDayData @entity {
     id: ID!
     date: Int!
-    # dailySupplyETH: BigDecimal!
-    # dailySupplyUSD: BigDecimal!
-    # dailyBorrowETH: BigDecimal!
-    # dailyBorrowUSD: BigDecimal!
-    dailyVolumeNOTE: BigDecimal!
-    dailyVolumeUSD: BigDecimal!
-    dailyTxns: BigInt!
+    dailySupplyVolumeNOTE: BigDecimal!
+    dailySupplyVolumeUSD: BigDecimal!
+    dailyBorrowVolumeNOTE: BigDecimal!
+    dailyBorrowVolumeUSD: BigDecimal!
+    dailySupplyTxns: BigInt!
+    dailyBorrowTxns: BigInt!
 
-    totalVolumeNOTE: BigDecimal!
-    totalVolumeUSD: BigDecimal!
     totalLiquidityNOTE: BigDecimal!
     totalLiquidityUSD: BigDecimal!
 }
@@ -174,16 +171,13 @@ type MarketDayData @entity {
     id: ID!
     date: Int!
     market: Market!
-    # dailySupplyETH: BigDecimal!
-    # dailySupplyUSD: BigDecimal!
-    # dailyBorrowETH: BigDecimal!
-    # dailyBorrowUSD: BigDecimal!
-    dailyVolumeNOTE: BigDecimal!
-    dailyVolumeUSD: BigDecimal!
-    dailyTxns: BigInt!
+    dailySupplyVolumeNOTE: BigDecimal!
+    dailySupplyVolumeUSD: BigDecimal!
+    dailyBorrowVolumeNOTE: BigDecimal!
+    dailyBorrowVolumeUSD: BigDecimal!
+    dailySupplyTxns: BigInt!
+    dailyBorrowTxns: BigInt!
 
-    totalVolumeNOTE: BigDecimal!
-    totalVolumeUSD: BigDecimal!
     totalLiquidityNOTE: BigDecimal!
     totalLiquidityUSD: BigDecimal!
     # dailyBorrowAPR: BigDecimal!
@@ -194,16 +188,13 @@ type MarketHourData @entity {
     id: ID!
     hourStartUnix: Int!
     market: Market!
-    # hourlySupplyETH: BigDecimal!
-    # hourlySupplyUSD: BigDecimal!
-    # hourlyBorrowETH: BigDecimal!
-    # hourlyBorrowUSD: BigDecimal!
-    hourlyVolumeNOTE: BigDecimal!
-    hourlyVolumeUSD: BigDecimal!
-    hourlyTxns: BigInt!
+    hourlySupplyVolumeNOTE: BigDecimal!
+    hourlySupplyVolumeUSD: BigDecimal!
+    hourlyBorrowVolumeNOTE: BigDecimal!
+    hourlyBorrowVolumeUSD: BigDecimal!
+    hourlySupplyTxns: BigInt!
+    hourlyBorrowTxns: BigInt!
 
-    totalVolumeNOTE: BigDecimal!
-    totalVolumeUSD: BigDecimal!
     totalLiquidityNOTE: BigDecimal!
     totalLiquidityUSD: BigDecimal!
     # hourlyBorrowAPR: BigDecimal!

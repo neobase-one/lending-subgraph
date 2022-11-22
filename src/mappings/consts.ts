@@ -35,6 +35,14 @@ export const cCantoAtom_ADDRESS = '0xc0d6574b2fe71eed8cd305df0da2323237322557'
 export const cNoteUsdc_Address = '0xd6a97e43fc885a83e97d599796458a331e580800'
 export const cNoteUsdt_Address = '0xf0cd6b5ce8a01d1b81f1d8b76643866c5816b49f'
 
+export const LIQUIDITY_WHITELIST: string[] = [
+  cUSDT_ADDRESS,
+  cUSDC_ADDRESS,
+  cETH_ADDRESS,
+  cCANTO_ADDRESS,
+  cATOM_ADDRESS,
+]
+
 // export const cW_CANTO_ADDRESS = "0x5e23dc409fc2f832f83cec191e245a191a4bcc5c";
 export const wCANTO_ADDRESS = '0x826551890Dc65655a0Aceca109aB11AbDbD7a07B'
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000'

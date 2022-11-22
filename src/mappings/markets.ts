@@ -38,6 +38,7 @@ import {
   DAYS_IN_YEAR_BD,
   ETH_ADDRESS,
   HUNDRED_BD,
+  LIQUIDITY_WHITELIST,
   MANTISSA_FACTOR,
   MANTISSA_FACTOR_BD,
   NegOne_BD,
@@ -313,6 +314,22 @@ export function getLiquidityUSD(market: Market): BigDecimal {
   return market.cash.times(market.underlyingPriceUSD)
 }
 
+export function getVolumePrice(tokenAmount: BigInt, market: Market): BigDecimal {
+  let amount = tokenAmount
+    .toBigDecimal()
+    .div(exponentToBigDecimal(market.underlyingDecimals))
+    .truncate(market.underlyingDecimals)
+  return amount.times(market.underlyingPrice)
+}
+
+export function getVolumePriceUSD(tokenAmount: BigInt, market: Market): BigDecimal {
+  let amount = tokenAmount
+    .toBigDecimal()
+    .div(exponentToBigDecimal(market.underlyingDecimals))
+    .truncate(market.underlyingDecimals)
+  return amount.times(market.underlyingPriceUSD)
+}
+
 export function updateMarket(
   event: EthereumEvent,
   marketAddress: Address,
@@ -434,7 +451,7 @@ export function updateMarket(
       .truncate(market.underlyingDecimals)
 
     // change in liquidity from last update - used in comp day data
-    if (market.id != cNOTE_ADDRESS) {
+    if (LIQUIDITY_WHITELIST.includes(market.id)) {
       comptroller.totalLiquidityNOTE = comptroller.totalLiquidityNOTE.plus(
         getLiquidity(market),
       )

@@ -30,23 +30,22 @@ export function updateMarketDayData(event: EthereumEvent): MarketDayData {
     marketDayData.date = dayStartTimestamp
     marketDayData.market = market.id
 
-    marketDayData.dailyVolumeNOTE = ZERO_BD
-    marketDayData.dailyVolumeUSD = ZERO_BD
-
-    marketDayData.totalVolumeNOTE = ZERO_BD
-    marketDayData.totalVolumeUSD = ZERO_BD
+    marketDayData.dailySupplyVolumeNOTE = ZERO_BD
+    marketDayData.dailySupplyVolumeUSD = ZERO_BD
+    marketDayData.dailyBorrowVolumeNOTE = ZERO_BD
+    marketDayData.dailyBorrowVolumeUSD = ZERO_BD
 
     marketDayData.totalLiquidityNOTE = ZERO_BD
     marketDayData.totalLiquidityUSD = ZERO_BD
 
-    marketDayData.dailyTxns = ZERO_BI
+    marketDayData.dailySupplyTxns = ZERO_BI
+    marketDayData.dailyBorrowTxns = ZERO_BI
   }
 
   // todo: update fields daily volume fields
   marketDayData.totalLiquidityNOTE = getLiquidity(market)
   marketDayData.totalLiquidityUSD = getLiquidityUSD(market)
 
-  marketDayData.dailyTxns = marketDayData.dailyTxns.plus(ONE_BI)
   marketDayData.save()
 
   return marketDayData as MarketDayData
@@ -71,24 +70,23 @@ export function updateMarketHourData(event: EthereumEvent): MarketHourData {
     marketHourData = new MarketHourData(marketHourId)
     marketHourData.market = market.id
     marketHourData.hourStartUnix = hourStartUnix
-    marketHourData.hourlyVolumeNOTE = ZERO_BD
-    marketHourData.hourlyVolumeUSD = ZERO_BD
 
-    marketHourData.totalVolumeNOTE = ZERO_BD
-    marketHourData.totalVolumeUSD = ZERO_BD
+    marketHourData.hourlySupplyVolumeNOTE = ZERO_BD
+    marketHourData.hourlySupplyVolumeUSD = ZERO_BD
+    marketHourData.hourlyBorrowVolumeNOTE = ZERO_BD
+    marketHourData.hourlyBorrowVolumeUSD = ZERO_BD
 
     marketHourData.totalLiquidityNOTE = ZERO_BD
     marketHourData.totalLiquidityUSD = ZERO_BD
 
-    marketHourData.hourlyTxns = ZERO_BI
+    marketHourData.hourlySupplyTxns = ZERO_BI
+    marketHourData.hourlyBorrowTxns = ZERO_BI
   }
 
   // todo: update volume
 
   marketHourData.totalLiquidityNOTE = getLiquidity(market)
   marketHourData.totalLiquidityUSD = getLiquidityUSD(market)
-
-  marketHourData.hourlyTxns = marketHourData.hourlyTxns.plus(ONE_BI)
 
   marketHourData.save()
   return marketHourData as MarketHourData
@@ -106,21 +104,20 @@ export function updateComptrollerDayData(event: EthereumEvent): ComptrollerDayDa
   if (compDayData === null) {
     compDayData = new ComptrollerDayData(dayId.toString())
     compDayData.date = dayStartTimestamp
-    compDayData.dailyVolumeNOTE = ZERO_BD
-    compDayData.dailyVolumeUSD = ZERO_BD
 
-    compDayData.totalVolumeNOTE = ZERO_BD
-    compDayData.totalVolumeUSD = ZERO_BD
+    compDayData.dailySupplyVolumeNOTE = ZERO_BD
+    compDayData.dailySupplyVolumeUSD = ZERO_BD
+    compDayData.dailyBorrowVolumeNOTE = ZERO_BD
+    compDayData.dailyBorrowVolumeUSD = ZERO_BD
 
     compDayData.totalLiquidityNOTE = ZERO_BD
     compDayData.totalLiquidityUSD = ZERO_BD
 
-    compDayData.dailyTxns = ZERO_BI
+    compDayData.dailySupplyTxns = ZERO_BI
+    compDayData.dailyBorrowTxns = ZERO_BI
   }
 
   // todo: update volume, liquidity
-  compDayData.dailyTxns = compDayData.dailyTxns.plus(ONE_BI)
-
   compDayData.totalLiquidityNOTE = comptroller.totalLiquidityNOTE
   compDayData.totalLiquidityUSD = comptroller.totalLiquidityUSD
 
