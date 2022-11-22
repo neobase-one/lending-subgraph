@@ -12,7 +12,7 @@ import {
 } from '../types/Comptroller/Comptroller'
 
 import { Market, Comptroller } from '../types/schema'
-import { MANTISSA_FACTOR_BD } from './consts'
+import { MANTISSA_FACTOR_BD, ZERO_BD } from './consts'
 import { updateCommonCTokenStats } from './helpers'
 import { createMarket } from './markets'
 
@@ -90,6 +90,8 @@ export function handleNewPriceOracle(event: NewPriceOracle): void {
   // This is the first event used in this mapping, so we use it to create the entity
   if (comptroller == null) {
     comptroller = new Comptroller('1')
+    comptroller.totalLiquidityNOTE = ZERO_BD
+    comptroller.totalLiquidityUSD = ZERO_BD
   }
   comptroller.priceOracle = event.params.newPriceOracle
   comptroller.save()

@@ -1,12 +1,17 @@
 /* eslint-disable prefer-const */ // to satisfy AS compiler
 
 // For each division by 10, add one to exponent to truncate one significant figure
-import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts/index'
+import { Address, BigDecimal, BigInt, EthereumEvent, log } from '@graphprotocol/graph-ts'
 import { Market, Comptroller } from '../types/schema'
 import { PriceOracle } from '../types/cNote/PriceOracle'
 import { ERC20 } from '../types/cNote/ERC20'
 import { CToken } from '../types/cNote/CToken'
 import { Comptroller as ComptrollerContract } from '../types/Comptroller/Comptroller'
+import {
+  updateComptrollerDayData,
+  updateMarketDayData,
+  updateMarketHourData,
+} from './dayUpdates'
 
 import { exponentToBigDecimal, powerToBigDecimal } from './helpers'
 import {
@@ -19,6 +24,7 @@ import {
   DAYS_IN_YEAR,
   DAYS_IN_YEAR_BD,
   HUNDRED_BD,
+  LIQUIDITY_WHITELIST,
   MANTISSA_FACTOR,
   MANTISSA_FACTOR_BD,
   NegOne_BD,
@@ -154,7 +160,7 @@ export function createMarket(marketAddress: string): Market {
   market.reserveFactor = BigInt.fromI32(0)
   market.underlyingPriceUSD = ZERO_BD
 
-  return market
+  return market as Market
 }
 
 function erc20_decimals(address: string, contract: ERC20): i32 {
@@ -207,13 +213,38 @@ function cToken_underlyingAddress(marketAddress: string, contract: CToken): Addr
   return Address.fromString(underlyingAddress)
 }
 
+export function getLiquidity(market: Market): BigDecimal {
+  return market.cash.times(market.underlyingPrice)
+}
+
+export function getLiquidityUSD(market: Market): BigDecimal {
+  return market.cash.times(market.underlyingPriceUSD)
+}
+
+export function getVolumePrice(tokenAmount: BigInt, market: Market): BigDecimal {
+  let amount = tokenAmount
+    .toBigDecimal()
+    .div(exponentToBigDecimal(market.underlyingDecimals))
+    .truncate(market.underlyingDecimals)
+  return amount.times(market.underlyingPrice)
+}
+
+export function getVolumePriceUSD(tokenAmount: BigInt, market: Market): BigDecimal {
+  let amount = tokenAmount
+    .toBigDecimal()
+    .div(exponentToBigDecimal(market.underlyingDecimals))
+    .truncate(market.underlyingDecimals)
+  return amount.times(market.underlyingPriceUSD)
+}
+
 export function updateMarket(
+  event: EthereumEvent,
   marketAddress: Address,
   blockNumber: i32,
   blockTimestamp: i32,
 ): Market | null {
   let marketID = marketAddress.toHex()
-  let market = Market.load(marketID)
+  let market = Market.load(marketID) as Market
   if (market == null) {
     market = createMarket(marketID)
   }
@@ -227,6 +258,14 @@ export function updateMarket(
     if (usdPriceInNote.equals(NegOne_BD)) {
       return null
     }
+
+    let comptroller = Comptroller.load('1') as Comptroller
+    comptroller.totalLiquidityNOTE = comptroller.totalLiquidityNOTE.minus(
+      getLiquidity(market),
+    )
+    comptroller.totalLiquidityUSD = comptroller.totalLiquidityUSD.minus(
+      getLiquidityUSD(market),
+    )
 
     // if cETH, we only update USD price
     if (market.id == cCANTO_ADDRESS) {
@@ -257,11 +296,13 @@ export function updateMarket(
 
       market.underlyingPrice = tokenPriceNote.truncate(market.underlyingDecimals)
       // if USDC, we only update ETH price
-      if (market.id != cUSDC_ADDRESS) {
-        market.underlyingPriceUSD = market.underlyingPrice
-          .div(usdPriceInNote)
-          .truncate(market.underlyingDecimals)
-      }
+      // if (market.id != cUSDC_ADDRESS) {
+      market.underlyingPriceUSD = market.underlyingPrice
+        .div(usdPriceInNote)
+        .truncate(market.underlyingDecimals)
+      // } else {
+      //   market.underlyin
+      // }
     }
 
     market.accrualBlockNumber = contract.accrualBlockNumber().toI32()
@@ -315,6 +356,17 @@ export function updateMarket(
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
+
+    // change in liquidity from last update - used in comp day data
+    if (LIQUIDITY_WHITELIST.includes(market.id)) {
+      comptroller.totalLiquidityNOTE = comptroller.totalLiquidityNOTE.plus(
+        getLiquidity(market),
+      )
+      comptroller.totalLiquidityUSD = comptroller.totalLiquidityUSD.plus(
+        getLiquidityUSD(market),
+      )
+      comptroller.save()
+    }
 
     // SUPPLY
     let supplyRateResult = contract.try_supplyRatePerBlock()
@@ -390,7 +442,14 @@ export function updateMarket(
 
     // Must convert to BigDecimal, and remove 10^18 that is used for Exp in Compound Solidity
     market.save()
+
+    // update metrics
+    // since cNOTE doesnt account for liquidity
+    updateComptrollerDayData(event)
+    updateMarketDayData(event)
+    updateMarketHourData(event)
   }
+
   return market as Market
 }
 

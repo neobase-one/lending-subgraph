@@ -10,6 +10,8 @@ type Comptroller @entity {
     liquidationIncentive: BigInt
     "Max assets a single user can enter"
     maxAssets: BigInt
+    totalLiquidityNOTE: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
 }
 
 # Market inforamtion for a CToken
@@ -149,4 +151,52 @@ type AccountCToken @entity {
 
     # lifetimeBorrowInterestAccrued: BigDecimal!
     # FORMULA: lifetimeBorrowInterestAccrued = borrowBalanceUnderlying - totalUnderlyingBorrowed + totalUnderlyingRepaid
+}
+
+type ComptrollerDayData @entity {
+    id: ID!
+    date: Int!
+    dailySupplyVolumeNOTE: BigDecimal!
+    dailySupplyVolumeUSD: BigDecimal!
+    dailyBorrowVolumeNOTE: BigDecimal!
+    dailyBorrowVolumeUSD: BigDecimal!
+    dailySupplyTxns: BigInt!
+    dailyBorrowTxns: BigInt!
+
+    totalLiquidityNOTE: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
+}
+
+type MarketDayData @entity {
+    id: ID!
+    date: Int!
+    market: Market!
+    dailySupplyVolumeNOTE: BigDecimal!
+    dailySupplyVolumeUSD: BigDecimal!
+    dailyBorrowVolumeNOTE: BigDecimal!
+    dailyBorrowVolumeUSD: BigDecimal!
+    dailySupplyTxns: BigInt!
+    dailyBorrowTxns: BigInt!
+
+    totalLiquidityNOTE: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
+    # dailyBorrowAPR: BigDecimal!
+    # dailySupplyAPR: BigDecimal!
+}
+
+type MarketHourData @entity {
+    id: ID!
+    hourStartUnix: Int!
+    market: Market!
+    hourlySupplyVolumeNOTE: BigDecimal!
+    hourlySupplyVolumeUSD: BigDecimal!
+    hourlyBorrowVolumeNOTE: BigDecimal!
+    hourlyBorrowVolumeUSD: BigDecimal!
+    hourlySupplyTxns: BigInt!
+    hourlyBorrowTxns: BigInt!
+
+    totalLiquidityNOTE: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
+    # hourlyBorrowAPR: BigDecimal!
+    # hourlySupplyAPR: BigDecimal!
 }
