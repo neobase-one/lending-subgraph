@@ -1,20 +1,27 @@
 /* eslint-disable prefer-const */ // to satisfy AS compiler
 
+import { log } from '@graphprotocol/graph-ts'
 import {
   MarketEntered,
   MarketExited,
   NewCloseFactor,
   NewCollateralFactor,
   NewLiquidationIncentive,
-  NewMaxAssets,
+  // NewMaxAssets,
   NewPriceOracle,
-} from '../types/comptroller/Comptroller'
+} from '../types/Comptroller/Comptroller'
 
 import { Market, Comptroller } from '../types/schema'
-import { mantissaFactorBD, updateCommonCTokenStats } from './helpers'
+import { MANTISSA_FACTOR_BD, ZERO_BD } from './consts'
+import { updateCommonCTokenStats } from './helpers'
+import { createMarket } from './markets'
 
 export function handleMarketEntered(event: MarketEntered): void {
-  let market = Market.load(event.params.cToken.toHexString())
+  let marketId = event.params.cToken.toHexString()
+  let market = Market.load(marketId)
+  if (market == null) {
+    market = createMarket(marketId)
+  }
   let accountID = event.params.account.toHex()
   let cTokenStats = updateCommonCTokenStats(
     market.id,
@@ -29,7 +36,11 @@ export function handleMarketEntered(event: MarketEntered): void {
 }
 
 export function handleMarketExited(event: MarketExited): void {
-  let market = Market.load(event.params.cToken.toHexString())
+  let marketId = event.params.cToken.toHexString()
+  let market = Market.load(marketId)
+  if (market === null) {
+    market = createMarket(marketId)
+  }
   let accountID = event.params.account.toHex()
   let cTokenStats = updateCommonCTokenStats(
     market.id,
@@ -50,10 +61,14 @@ export function handleNewCloseFactor(event: NewCloseFactor): void {
 }
 
 export function handleNewCollateralFactor(event: NewCollateralFactor): void {
-  let market = Market.load(event.params.cToken.toHexString())
+  let marketId = event.params.cToken.toHex()
+  let market = Market.load(marketId)
+  if (market == null) {
+    market = createMarket(marketId)
+  }
   market.collateralFactor = event.params.newCollateralFactorMantissa
     .toBigDecimal()
-    .div(mantissaFactorBD)
+    .div(MANTISSA_FACTOR_BD)
   market.save()
 }
 
@@ -64,17 +79,19 @@ export function handleNewLiquidationIncentive(event: NewLiquidationIncentive): v
   comptroller.save()
 }
 
-export function handleNewMaxAssets(event: NewMaxAssets): void {
-  let comptroller = Comptroller.load('1')
-  comptroller.maxAssets = event.params.newMaxAssets
-  comptroller.save()
-}
+// export function handleNewMaxAssets(event: NewMaxAssets): void {
+//   let comptroller = Comptroller.load('1')
+//   comptroller.maxAssets = event.params.newMaxAssets
+//   comptroller.save()
+// }
 
 export function handleNewPriceOracle(event: NewPriceOracle): void {
   let comptroller = Comptroller.load('1')
   // This is the first event used in this mapping, so we use it to create the entity
   if (comptroller == null) {
     comptroller = new Comptroller('1')
+    comptroller.totalLiquidityNOTE = ZERO_BD
+    comptroller.totalLiquidityUSD = ZERO_BD
   }
   comptroller.priceOracle = event.params.newPriceOracle
   comptroller.save()

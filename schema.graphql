@@ -10,13 +10,13 @@ type Comptroller @entity {
     liquidationIncentive: BigInt
     "Max assets a single user can enter"
     maxAssets: BigInt
+    totalLiquidityNOTE: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
 }
 
 # Market inforamtion for a CToken
 type Market @entity { # TODO rename to CToken, not market AND ALL OTHERS
     #Fields that match compounds API
-    "Yearly borrow rate. With 2102400 blocks per year"
-    borrowRate: BigDecimal!
     "The cToken contract balance of ERC20 or ETH"
     cash: BigDecimal!
     "Collateral factor determining how much one can borrow"
@@ -33,8 +33,18 @@ type Market @entity { # TODO rename to CToken, not market AND ALL OTHERS
     numberOfSuppliers: Int!
     "Reserves stored in the contract"
     reserves: BigDecimal!
-    "Yearly supply rate. With 2104400 blocks per year"
+    "Yearly supply rate. With x blocks per year at 5 s/block"
     supplyRate: BigDecimal!
+    "supply APY"
+    supplyAPY: BigDecimal!
+    "supply distribution APY"
+    supplyDistributionAPY: BigDecimal!
+    "Yearly borrow rate. With x blocks per year at 5 s/block"
+    borrowRate: BigDecimal!
+    "borrow APY"
+    borrowAPY: BigDecimal!
+    "borrowDistribution APY"
+    borrowDistributionAPY: BigDecimal!
     "CToken symbol"
     symbol: String!
     "CToken address"
@@ -141,4 +151,52 @@ type AccountCToken @entity {
 
     # lifetimeBorrowInterestAccrued: BigDecimal!
     # FORMULA: lifetimeBorrowInterestAccrued = borrowBalanceUnderlying - totalUnderlyingBorrowed + totalUnderlyingRepaid
+}
+
+type ComptrollerDayData @entity {
+    id: ID!
+    date: Int!
+    dailySupplyVolumeNOTE: BigDecimal!
+    dailySupplyVolumeUSD: BigDecimal!
+    dailyBorrowVolumeNOTE: BigDecimal!
+    dailyBorrowVolumeUSD: BigDecimal!
+    dailySupplyTxns: BigInt!
+    dailyBorrowTxns: BigInt!
+
+    totalLiquidityNOTE: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
+}
+
+type MarketDayData @entity {
+    id: ID!
+    date: Int!
+    market: Market!
+    dailySupplyVolumeNOTE: BigDecimal!
+    dailySupplyVolumeUSD: BigDecimal!
+    dailyBorrowVolumeNOTE: BigDecimal!
+    dailyBorrowVolumeUSD: BigDecimal!
+    dailySupplyTxns: BigInt!
+    dailyBorrowTxns: BigInt!
+
+    totalLiquidityNOTE: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
+    # dailyBorrowAPR: BigDecimal!
+    # dailySupplyAPR: BigDecimal!
+}
+
+type MarketHourData @entity {
+    id: ID!
+    hourStartUnix: Int!
+    market: Market!
+    hourlySupplyVolumeNOTE: BigDecimal!
+    hourlySupplyVolumeUSD: BigDecimal!
+    hourlyBorrowVolumeNOTE: BigDecimal!
+    hourlyBorrowVolumeUSD: BigDecimal!
+    hourlySupplyTxns: BigInt!
+    hourlyBorrowTxns: BigInt!
+
+    totalLiquidityNOTE: BigDecimal!
+    totalLiquidityUSD: BigDecimal!
+    # hourlyBorrowAPR: BigDecimal!
+    # hourlySupplyAPR: BigDecimal!
 }

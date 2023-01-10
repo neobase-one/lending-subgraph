@@ -9,19 +9,18 @@ import {
   AccrueInterest,
   NewReserveFactor,
   NewMarketInterestRateModel,
-} from '../types/cREP/CToken'
+} from '../types/cNote/CToken'
 import { AccountCToken, Market, Account } from '../types/schema'
 
-import { createMarket, updateMarket } from './markets'
+import { createMarket, getVolumePrice, getVolumePriceUSD, updateMarket } from './markets'
+import { createAccount, updateCommonCTokenStats, exponentToBigDecimal } from './helpers'
+import { log } from '@graphprotocol/graph-ts'
+import { cTOKEN_DECIMALS, cTOKEN_DECIMALS_BD, ONE_BI, ZERO_BD } from './consts'
 import {
-  createAccount,
-  updateCommonCTokenStats,
-  exponentToBigDecimal,
-  cTokenDecimalsBD,
-  cTokenDecimals,
-  createAccountCToken,
-  zeroBD,
-} from './helpers'
+  updateComptrollerDayData,
+  updateMarketDayData,
+  updateMarketHourData,
+} from './dayUpdates'
 
 /* Account supplies assets into market and receives cTokens in exchange
  *
@@ -68,7 +67,11 @@ export function handleRedeem(event: Redeem): void {
  *    No need to updateMarket(), handleAccrueInterest() ALWAYS runs before this
  */
 export function handleBorrow(event: Borrow): void {
-  let market = Market.load(event.address.toHexString())
+  let marketId = event.address.toHex()
+  let market = Market.load(marketId) as Market
+  if (market == null) {
+    market = createMarket(marketId)
+  }
   let accountID = event.params.borrower.toHex()
 
   // Update cTokenStats common for all events, and return the stats to update unique
@@ -106,11 +109,44 @@ export function handleBorrow(event: Borrow): void {
   account.save()
 
   if (
-    previousBorrow.equals(zeroBD) &&
-    !event.params.accountBorrows.toBigDecimal().equals(zeroBD) // checking edge case for borrwing 0
+    previousBorrow.equals(ZERO_BD) &&
+    !event.params.accountBorrows.toBigDecimal().equals(ZERO_BD) // checking edge case for borrwing 0
   ) {
     market.numberOfBorrowers = market.numberOfBorrowers + 1
     market.save()
+
+    // todo - volume verify - borrow
+    let comptrollerDayData = updateComptrollerDayData(event)
+    let marketHourData = updateMarketHourData(event)
+    let marketDayData = updateMarketDayData(event)
+
+    let volume = getVolumePrice(event.params.borrowAmount, market)
+    let volumeUSD = getVolumePriceUSD(event.params.borrowAmount, market)
+
+    comptrollerDayData.dailyBorrowTxns = comptrollerDayData.dailyBorrowTxns.plus(ONE_BI)
+    comptrollerDayData.dailyBorrowVolumeNOTE = comptrollerDayData.dailyBorrowVolumeNOTE.plus(
+      volume,
+    )
+    comptrollerDayData.dailyBorrowVolumeUSD = comptrollerDayData.dailyBorrowVolumeUSD.plus(
+      volumeUSD,
+    )
+    comptrollerDayData.save()
+
+    marketHourData.hourlyBorrowTxns = marketHourData.hourlyBorrowTxns.plus(ONE_BI)
+    marketHourData.hourlyBorrowVolumeNOTE = marketHourData.hourlyBorrowVolumeNOTE.plus(
+      volume,
+    )
+    marketHourData.hourlyBorrowVolumeUSD = marketHourData.hourlyBorrowVolumeUSD.plus(
+      volumeUSD,
+    )
+    marketHourData.save()
+
+    marketDayData.dailyBorrowTxns = marketDayData.dailyBorrowTxns.plus(ONE_BI)
+    marketDayData.dailyBorrowVolumeNOTE = marketDayData.dailyBorrowVolumeNOTE.plus(volume)
+    marketDayData.dailyBorrowVolumeUSD = marketDayData.dailyBorrowVolumeUSD.plus(
+      volumeUSD,
+    )
+    marketDayData.save()
   }
 }
 
@@ -129,7 +165,11 @@ export function handleBorrow(event: Borrow): void {
  *    repay.
  */
 export function handleRepayBorrow(event: RepayBorrow): void {
-  let market = Market.load(event.address.toHexString())
+  let marketId = event.address.toHex()
+  let market = Market.load(marketId) as Market
+  if (market == null) {
+    market = createMarket(marketId)
+  }
   let accountID = event.params.borrower.toHex()
 
   // Update cTokenStats common for all events, and return the stats to update unique
@@ -163,9 +203,44 @@ export function handleRepayBorrow(event: RepayBorrow): void {
     createAccount(accountID)
   }
 
-  if (cTokenStats.storedBorrowBalance.equals(zeroBD)) {
+  if (cTokenStats.storedBorrowBalance.equals(ZERO_BD)) {
     market.numberOfBorrowers = market.numberOfBorrowers - 1
     market.save()
+
+    // todo - volume verify - borrow
+    let comptrollerDayData = updateComptrollerDayData(event)
+    let marketHourData = updateMarketHourData(event)
+    let marketDayData = updateMarketDayData(event)
+
+    let volume = getVolumePrice(event.params.repayAmount, market)
+    let volumeUSD = getVolumePriceUSD(event.params.repayAmount, market)
+
+    comptrollerDayData.dailyBorrowTxns = comptrollerDayData.dailyBorrowTxns.plus(ONE_BI)
+    comptrollerDayData.dailyBorrowVolumeNOTE = comptrollerDayData.dailyBorrowVolumeNOTE.minus(
+      volume,
+    )
+    comptrollerDayData.dailyBorrowVolumeUSD = comptrollerDayData.dailyBorrowVolumeUSD.minus(
+      volumeUSD,
+    )
+    comptrollerDayData.save()
+
+    marketHourData.hourlyBorrowTxns = marketHourData.hourlyBorrowTxns.plus(ONE_BI)
+    marketHourData.hourlyBorrowVolumeNOTE = marketHourData.hourlyBorrowVolumeNOTE.minus(
+      volume,
+    )
+    marketHourData.hourlyBorrowVolumeUSD = marketHourData.hourlyBorrowVolumeUSD.minus(
+      volumeUSD,
+    )
+    marketHourData.save()
+
+    marketDayData.dailyBorrowTxns = marketDayData.dailyBorrowTxns.plus(ONE_BI)
+    marketDayData.dailyBorrowVolumeNOTE = marketDayData.dailyBorrowVolumeNOTE.minus(
+      volume,
+    )
+    marketDayData.dailyBorrowVolumeUSD = marketDayData.dailyBorrowVolumeUSD.minus(
+      volumeUSD,
+    )
+    marketDayData.save()
   }
 }
 
@@ -221,18 +296,26 @@ export function handleLiquidateBorrow(event: LiquidateBorrow): void {
 export function handleTransfer(event: Transfer): void {
   // We only updateMarket() if accrual block number is not up to date. This will only happen
   // with normal transfers, since mint, redeem, and seize transfers will already run updateMarket()
-  let marketID = event.address.toHexString()
-  let market = Market.load(marketID)
+  let marketId = event.address.toHex()
+  let market = Market.load(marketId)
+  if (market == null) {
+    market = createMarket(marketId)
+  }
+
   if (market.accrualBlockNumber != event.block.number.toI32()) {
     market = updateMarket(
+      event,
       event.address,
       event.block.number.toI32(),
       event.block.timestamp.toI32(),
     )
+    if (market == null) {
+      return
+    }
   }
 
   let amountUnderlying = market.exchangeRate.times(
-    event.params.amount.toBigDecimal().div(cTokenDecimalsBD),
+    event.params.amount.toBigDecimal().div(cTOKEN_DECIMALS_BD),
   )
   let amountUnderylingTruncated = amountUnderlying.truncate(market.underlyingDecimals)
 
@@ -240,7 +323,7 @@ export function handleTransfer(event: Transfer): void {
 
   // Checking if the tx is FROM the cToken contract (i.e. this will not run when minting)
   // If so, it is a mint, and we don't need to run these calculations
-  if (accountFromID != marketID) {
+  if (accountFromID != marketId) {
     let accountFrom = Account.load(accountFromID)
     if (accountFrom == null) {
       createAccount(accountFromID)
@@ -260,8 +343,8 @@ export function handleTransfer(event: Transfer): void {
     cTokenStatsFrom.cTokenBalance = cTokenStatsFrom.cTokenBalance.minus(
       event.params.amount
         .toBigDecimal()
-        .div(cTokenDecimalsBD)
-        .truncate(cTokenDecimals),
+        .div(cTOKEN_DECIMALS_BD)
+        .truncate(cTOKEN_DECIMALS),
     )
 
     cTokenStatsFrom.totalUnderlyingRedeemed = cTokenStatsFrom.totalUnderlyingRedeemed.plus(
@@ -269,7 +352,7 @@ export function handleTransfer(event: Transfer): void {
     )
     cTokenStatsFrom.save()
 
-    if (cTokenStatsFrom.cTokenBalance.equals(zeroBD)) {
+    if (cTokenStatsFrom.cTokenBalance.equals(ZERO_BD)) {
       market.numberOfSuppliers = market.numberOfSuppliers - 1
       market.save()
     }
@@ -280,7 +363,7 @@ export function handleTransfer(event: Transfer): void {
   // If so, we ignore it. this leaves an edge case, where someone who accidentally sends
   // cTokens to a cToken contract, where it will not get recorded. Right now it would
   // be messy to include, so we are leaving it out for now TODO fix this in future
-  if (accountToID != marketID) {
+  if (accountToID != marketId) {
     let accountTo = Account.load(accountToID)
     if (accountTo == null) {
       createAccount(accountToID)
@@ -301,8 +384,8 @@ export function handleTransfer(event: Transfer): void {
     cTokenStatsTo.cTokenBalance = cTokenStatsTo.cTokenBalance.plus(
       event.params.amount
         .toBigDecimal()
-        .div(cTokenDecimalsBD)
-        .truncate(cTokenDecimals),
+        .div(cTOKEN_DECIMALS_BD)
+        .truncate(cTOKEN_DECIMALS),
     )
 
     cTokenStatsTo.totalUnderlyingSupplied = cTokenStatsTo.totalUnderlyingSupplied.plus(
@@ -311,22 +394,136 @@ export function handleTransfer(event: Transfer): void {
     cTokenStatsTo.save()
 
     if (
-      previousCTokenBalanceTo.equals(zeroBD) &&
-      !event.params.amount.toBigDecimal().equals(zeroBD) // checking edge case for transfers of 0
+      previousCTokenBalanceTo.equals(ZERO_BD) &&
+      !event.params.amount.toBigDecimal().equals(ZERO_BD) // checking edge case for transfers of 0
     ) {
       market.numberOfSuppliers = market.numberOfSuppliers + 1
       market.save()
+    }
+
+    // todo - volume verify - supply
+    if (event.params.from.toHex() == event.address.toHex()) {
+      let comptrollerDayData = updateComptrollerDayData(event)
+      let marketHourData = updateMarketHourData(event)
+      let marketDayData = updateMarketDayData(event)
+
+      let volume = getVolumePrice(event.params.amount, market as Market)
+      let volumeUSD = getVolumePriceUSD(event.params.amount, market as Market)
+
+      comptrollerDayData.dailySupplyTxns = comptrollerDayData.dailySupplyTxns.plus(ONE_BI)
+      comptrollerDayData.dailySupplyVolumeNOTE = comptrollerDayData.dailySupplyVolumeNOTE.plus(
+        volume,
+      )
+      comptrollerDayData.dailySupplyVolumeUSD = comptrollerDayData.dailySupplyVolumeUSD.plus(
+        volumeUSD,
+      )
+      comptrollerDayData.save()
+
+      marketHourData.hourlySupplyTxns = marketHourData.hourlySupplyTxns.plus(ONE_BI)
+      marketHourData.hourlySupplyVolumeNOTE = marketHourData.hourlySupplyVolumeNOTE.plus(
+        volume,
+      )
+      marketHourData.hourlySupplyVolumeUSD = marketHourData.hourlySupplyVolumeUSD.plus(
+        volumeUSD,
+      )
+      marketHourData.save()
+
+      marketDayData.dailySupplyTxns = marketDayData.dailySupplyTxns.plus(ONE_BI)
+      marketDayData.dailySupplyVolumeNOTE = marketDayData.dailySupplyVolumeNOTE.plus(
+        volume,
+      )
+      marketDayData.dailySupplyVolumeUSD = marketDayData.dailySupplyVolumeUSD.plus(
+        volumeUSD,
+      )
+      marketDayData.save()
+    } else if (event.params.to.toHex() == event.address.toHex()) {
+      let comptrollerDayData = updateComptrollerDayData(event)
+      let marketHourData = updateMarketHourData(event)
+      let marketDayData = updateMarketDayData(event)
+
+      let volume = getVolumePrice(event.params.amount, market as Market)
+      let volumeUSD = getVolumePriceUSD(event.params.amount, market as Market)
+
+      comptrollerDayData.dailySupplyTxns = comptrollerDayData.dailySupplyTxns.plus(ONE_BI)
+      comptrollerDayData.dailySupplyVolumeNOTE = comptrollerDayData.dailySupplyVolumeNOTE.minus(
+        volume,
+      )
+      comptrollerDayData.dailySupplyVolumeUSD = comptrollerDayData.dailySupplyVolumeUSD.minus(
+        volumeUSD,
+      )
+      comptrollerDayData.save()
+
+      marketHourData.hourlySupplyTxns = marketHourData.hourlySupplyTxns.plus(ONE_BI)
+      marketHourData.hourlySupplyVolumeNOTE = marketHourData.hourlySupplyVolumeNOTE.minus(
+        volume,
+      )
+      marketHourData.hourlySupplyVolumeUSD = marketHourData.hourlySupplyVolumeUSD.minus(
+        volumeUSD,
+      )
+      marketHourData.save()
+
+      marketDayData.dailySupplyTxns = marketDayData.dailySupplyTxns.plus(ONE_BI)
+      marketDayData.dailySupplyVolumeNOTE = marketDayData.dailySupplyVolumeNOTE.minus(
+        volume,
+      )
+      marketDayData.dailySupplyVolumeUSD = marketDayData.dailySupplyVolumeUSD.minus(
+        volumeUSD,
+      )
+      marketDayData.save()
     }
   }
 }
 
 export function handleAccrueInterest(event: AccrueInterest): void {
-  updateMarket(event.address, event.block.number.toI32(), event.block.timestamp.toI32())
+  let market = updateMarket(
+    event,
+    event.address,
+    event.block.number.toI32(),
+    event.block.timestamp.toI32(),
+  ) as Market
+
+  if (market == null) {
+    return
+  }
+
+  // todo - volume verify - borrow
+  let comptrollerDayData = updateComptrollerDayData(event)
+  let marketHourData = updateMarketHourData(event)
+  let marketDayData = updateMarketDayData(event)
+
+  let volume = getVolumePrice(event.params.interestAccumulated, market)
+  let volumeUSD = getVolumePriceUSD(event.params.interestAccumulated, market)
+
+  comptrollerDayData.dailySupplyTxns = comptrollerDayData.dailySupplyTxns.plus(ONE_BI)
+  comptrollerDayData.dailyBorrowVolumeNOTE = comptrollerDayData.dailyBorrowVolumeNOTE.plus(
+    volume,
+  )
+  comptrollerDayData.dailyBorrowVolumeUSD = comptrollerDayData.dailyBorrowVolumeUSD.plus(
+    volumeUSD,
+  )
+  comptrollerDayData.save()
+
+  marketHourData.hourlySupplyTxns = marketHourData.hourlySupplyTxns.plus(ONE_BI)
+  marketHourData.hourlyBorrowVolumeNOTE = marketHourData.hourlyBorrowVolumeNOTE.plus(
+    volume,
+  )
+  marketHourData.hourlyBorrowVolumeUSD = marketHourData.hourlyBorrowVolumeUSD.plus(
+    volumeUSD,
+  )
+  marketHourData.save()
+
+  marketDayData.dailySupplyTxns = marketDayData.dailySupplyTxns.plus(ONE_BI)
+  marketDayData.dailyBorrowVolumeNOTE = marketDayData.dailyBorrowVolumeNOTE.plus(volume)
+  marketDayData.dailyBorrowVolumeUSD = marketDayData.dailyBorrowVolumeUSD.plus(volumeUSD)
+  marketDayData.save()
 }
 
 export function handleNewReserveFactor(event: NewReserveFactor): void {
-  let marketID = event.address.toHex()
-  let market = Market.load(marketID)
+  let marketId = event.address.toHex()
+  let market = Market.load(marketId)
+  if (market == null) {
+    market = createMarket(marketId)
+  }
   market.reserveFactor = event.params.newReserveFactorMantissa
   market.save()
 }
@@ -334,10 +531,10 @@ export function handleNewReserveFactor(event: NewReserveFactor): void {
 export function handleNewMarketInterestRateModel(
   event: NewMarketInterestRateModel,
 ): void {
-  let marketID = event.address.toHex()
-  let market = Market.load(marketID)
+  let marketId = event.address.toHex()
+  let market = Market.load(marketId)
   if (market == null) {
-    market = createMarket(marketID)
+    market = createMarket(marketId)
   }
   market.interestRateModelAddress = event.params.newInterestRateModel
   market.save()
