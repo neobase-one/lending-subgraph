@@ -13,7 +13,7 @@ dataSources:
       startBlock: 224957
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -53,7 +53,7 @@ dataSources:
       startBlock: 224958
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -93,7 +93,7 @@ dataSources:
       startBlock: 224960
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -133,7 +133,7 @@ dataSources:
       startBlock: 224961
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -173,7 +173,7 @@ dataSources:
       startBlock: 85393
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -213,7 +213,7 @@ dataSources:
       startBlock: 85394
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -253,7 +253,7 @@ dataSources:
       startBlock: 225010
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -293,7 +293,7 @@ dataSources:
       startBlock: 225015
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -333,7 +333,7 @@ dataSources:
       startBlock: 225013
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -373,7 +373,7 @@ dataSources:
       startBlock: 225011
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -413,7 +413,7 @@ dataSources:
       startBlock: 225012
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -453,7 +453,7 @@ dataSources:
       startBlock: 224944
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/comptroller.ts
       entities:
@@ -480,4 +480,124 @@ dataSources:
         - event: NewLiquidationIncentive(uint256,uint256)
           handler: handleNewLiquidationIncentive
         - event: NewPriceOracle(address,address)
+          handler: handleNewPriceOracle
+  - kind: ethereum/contract
+    name: cfBILL
+    network: mainnet
+    source:
+      address: "0xf1f89df149bc5f2b6b29783915d1f9fe2d24459c"
+      abi: CToken
+      startBlock: 224957
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/ctoken.ts
+      entities:
+        - User
+        - Market
+        - CTokenInfo
+      abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
+        - name: CToken
+          file: ./abis/CToken.json
+        - name: PriceOracle
+          file: ./abis/BaseV1Router.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Borrow(address,uint256,uint256,uint256)
+          handler: handleBorrow
+        - event: RepayBorrow(address,address,uint256,uint256,uint256)
+          handler: handleRepayBorrow
+        - event: LiquidateBorrow(address,address,uint256,address,uint256)
+          handler: handleLiquidateBorrow
+        - event: AccrueInterest(uint256,uint256,uint256,uint256)
+          handler: handleAccrueInterest
+        - event: NewReserveFactor(uint256,uint256)
+          handler: handleNewReserveFactor
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: NewMarketInterestRateModel(address,address)
+          handler: handleNewPriceOracle
+  - kind: ethereum/contract
+    name: cifBILL
+    network: mainnet
+    source:
+      address: "0x897709fc83ba7a4271d22ed4c01278cc1da8d6f8"
+      abi: CToken
+      startBlock: 224957
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/ctoken.ts
+      entities:
+        - User
+        - Market
+        - CTokenInfo
+      abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
+        - name: CToken
+          file: ./abis/CToken.json
+        - name: PriceOracle
+          file: ./abis/BaseV1Router.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Borrow(address,uint256,uint256,uint256)
+          handler: handleBorrow
+        - event: RepayBorrow(address,address,uint256,uint256,uint256)
+          handler: handleRepayBorrow
+        - event: LiquidateBorrow(address,address,uint256,address,uint256)
+          handler: handleLiquidateBorrow
+        - event: AccrueInterest(uint256,uint256,uint256,uint256)
+          handler: handleAccrueInterest
+        - event: NewReserveFactor(uint256,uint256)
+          handler: handleNewReserveFactor
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: NewMarketInterestRateModel(address,address)
+          handler: handleNewPriceOracle
+  - kind: ethereum/contract
+    name: cUSYC
+    network: mainnet
+    source:
+      address: "0x0355e393cf0cf5486d9caefb64407b7b1033c2f1"
+      abi: CToken
+      startBlock: 224957
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/ctoken.ts
+      entities:
+        - User
+        - Market
+        - CTokenInfo
+      abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
+        - name: CToken
+          file: ./abis/CToken.json
+        - name: PriceOracle
+          file: ./abis/BaseV1Router.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Borrow(address,uint256,uint256,uint256)
+          handler: handleBorrow
+        - event: RepayBorrow(address,address,uint256,uint256,uint256)
+          handler: handleRepayBorrow
+        - event: LiquidateBorrow(address,address,uint256,address,uint256)
+          handler: handleLiquidateBorrow
+        - event: AccrueInterest(uint256,uint256,uint256,uint256)
+          handler: handleAccrueInterest
+        - event: NewReserveFactor(uint256,uint256)
+          handler: handleNewReserveFactor
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: NewMarketInterestRateModel(address,address)
           handler: handleNewPriceOracle
