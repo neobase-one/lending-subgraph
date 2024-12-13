@@ -6,8 +6,8 @@
   "scripts": {
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
-    "create-local": "graph create compound-finance/compound-v2 --node http://127.0.0.1:8020",
-    "deploy-local": "graph deploy compound-finance/compound-v2 --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020/",
+    "create-local": "graph create canto/clm-v2 --node http://127.0.0.1:8020",
+    "deploy-local": "graph deploy canto/clm-v2 --debug --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020/",
     "deploy": "graph deploy compound-finance/compound-v2 --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "prodtest": "graph deploy davekaj/compound-v2 --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-staging": "graph deploy --debug --ipfs https://api.staging.thegraph.com/ipfs/ --node https://api.staging.thegraph.com/deploy/ davekaj/compoundv2",
@@ -15,16 +15,16 @@
     "prettier": "./node_modules/.bin/prettier —-write '**/*.ts'"
   },
   "devDependencies": {
-    "@graphprotocol/graph-cli": "http://github.com/graphprotocol/graph-cli#ford/add-startblock-to-contract-source",
+    "@graphprotocol/graph-cli": "0.17.0",
     "@graphprotocol/graph-ts": "^0.15.1",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "eslint": "^6.2.2",
     "eslint-config-prettier": "^6.1.0",
-    "prettier": "^1.18.2",
-    "typescript": "^3.5.2",
     "husky": "^3.0.5",
-    "lint-staged": "^9.2.5"
+    "lint-staged": "^9.2.5",
+    "prettier": "^1.18.2",
+    "typescript": "^3.5.2"
   },
   "husky": {
     "hooks": {
@@ -36,5 +36,8 @@
       "prettier --write --config ./.prettierrc",
       "git add"
     ]
+  },
+  "resolutions": {
+    "concat-stream": "github:max-mapper/concat-stream#master"
   }
 }

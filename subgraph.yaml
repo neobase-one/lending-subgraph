@@ -6,14 +6,14 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: cNote
-    network: mainnet
+    network: canto 
     source:
       address: "0xEe602429Ef7eCe0a13e4FfE8dBC16e101049504C"
       abi: CToken
       startBlock: 224957
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -46,14 +46,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: cUSDC
-    network: mainnet
+    network: canto 
     source:
       address: "0xdE59F060D7ee2b612E7360E6C1B97c4d8289Ca2e"
       abi: CToken
       startBlock: 224958
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -86,14 +86,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: cUSDT
-    network: mainnet
+    network: canto 
     source:
       address: "0x6b46ba92d7e94FfA658698764f5b8dfD537315A9"
       abi: CToken
       startBlock: 224960
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -126,14 +126,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: cATOM
-    network: mainnet
+    network: canto 
     source:
       address: "0x617383F201076e7cE0f6E625D1a983b3D1bd277A"
       abi: CToken
       startBlock: 224961
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -166,14 +166,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: cETH
-    network: mainnet
+    network: canto 
     source:
       address: "0x830b9849E7D79B92408a86A557e7baAACBeC6030"
       abi: CToken
       startBlock: 85393
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -206,14 +206,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: cCANTO
-    network: mainnet
+    network: canto 
     source:
       address: "0xB65Ec550ff356EcA6150F733bA9B954b2e0Ca488"
       abi: CToken
       startBlock: 85394
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -246,14 +246,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: cCANTO/NOTE
-    network: mainnet
+    network: canto 
     source:
       address: "0x3C96dCfd875253A37acB3D2B102b6f328349b16B"
       abi: CToken
       startBlock: 225010
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -286,14 +286,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: cCANTO/ETH
-    network: mainnet
+    network: canto 
     source:
       address: "0xb49A395B39A0b410675406bEE7bD06330CB503E3"
       abi: CToken
       startBlock: 225015
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -326,14 +326,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: cCANTO/ATOM
-    network: mainnet
+    network: canto 
     source:
       address: "0xC0D6574b2fe71eED8Cd305df0DA2323237322557"
       abi: CToken
       startBlock: 225013
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -366,14 +366,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: cNOTE/USDC
-    network: mainnet
+    network: canto 
     source:
       address: "0xD6a97e43FC885A83E97d599796458A331E580800"
       abi: CToken
       startBlock: 225011
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -406,14 +406,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: cNOTE/USDT
-    network: mainnet
+    network: canto 
     source:
       address: "0xf0cd6b5cE8A01D1B81F1d8B76643866c5816b49F"
       abi: CToken
       startBlock: 225012
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/ctoken.ts
       entities:
@@ -446,14 +446,14 @@ dataSources:
           handler: handleNewMarketInterestRateModel
   - kind: ethereum/contract
     name: Comptroller
-    network: mainnet
+    network: canto 
     source:
       address: "0x5E23dC409Fc2F832f83CEc191E245A191a4bCc5C"
       abi: Comptroller
       startBlock: 224944
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       file: ./src/mappings/comptroller.ts
       entities:
@@ -480,4 +480,124 @@ dataSources:
         - event: NewLiquidationIncentive(uint256,uint256)
           handler: handleNewLiquidationIncentive
         - event: NewPriceOracle(address,address)
+          handler: handleNewPriceOracle
+  - kind: ethereum/contract
+    name: cfBILL
+    network: canto 
+    source:
+      address: "0xf1f89df149bc5f2b6b29783915d1f9fe2d24459c"
+      abi: CToken
+      startBlock: 7095556
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/ctoken.ts
+      entities:
+        - User
+        - Market
+        - CTokenInfo
+      abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
+        - name: CToken
+          file: ./abis/CToken.json
+        - name: PriceOracle
+          file: ./abis/BaseV1Router.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Borrow(address,uint256,uint256,uint256)
+          handler: handleBorrow
+        - event: RepayBorrow(address,address,uint256,uint256,uint256)
+          handler: handleRepayBorrow
+        - event: LiquidateBorrow(address,address,uint256,address,uint256)
+          handler: handleLiquidateBorrow
+        - event: AccrueInterest(uint256,uint256,uint256,uint256)
+          handler: handleAccrueInterest
+        - event: NewReserveFactor(uint256,uint256)
+          handler: handleNewReserveFactor
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: NewMarketInterestRateModel(address,address)
+          handler: handleNewPriceOracle
+  - kind: ethereum/contract
+    name: cifBILL
+    network: canto 
+    source:
+      address: "0x897709fc83ba7a4271d22ed4c01278cc1da8d6f8"
+      abi: CToken
+      startBlock: 7095598
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/ctoken.ts
+      entities:
+        - User
+        - Market
+        - CTokenInfo
+      abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
+        - name: CToken
+          file: ./abis/CToken.json
+        - name: PriceOracle
+          file: ./abis/BaseV1Router.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Borrow(address,uint256,uint256,uint256)
+          handler: handleBorrow
+        - event: RepayBorrow(address,address,uint256,uint256,uint256)
+          handler: handleRepayBorrow
+        - event: LiquidateBorrow(address,address,uint256,address,uint256)
+          handler: handleLiquidateBorrow
+        - event: AccrueInterest(uint256,uint256,uint256,uint256)
+          handler: handleAccrueInterest
+        - event: NewReserveFactor(uint256,uint256)
+          handler: handleNewReserveFactor
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: NewMarketInterestRateModel(address,address)
+          handler: handleNewPriceOracle
+  - kind: ethereum/contract
+    name: cUSYC
+    network: canto 
+    source:
+      address: "0x0355e393cf0cf5486d9caefb64407b7b1033c2f1"
+      abi: CToken
+      startBlock: 6423534
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mappings/ctoken.ts
+      entities:
+        - User
+        - Market
+        - CTokenInfo
+      abis:
+        - name: Comptroller
+          file: ./abis/Comptroller.json
+        - name: CToken
+          file: ./abis/CToken.json
+        - name: PriceOracle
+          file: ./abis/BaseV1Router.json
+        - name: ERC20
+          file: ./abis/ERC20.json
+      eventHandlers:
+        - event: Borrow(address,uint256,uint256,uint256)
+          handler: handleBorrow
+        - event: RepayBorrow(address,address,uint256,uint256,uint256)
+          handler: handleRepayBorrow
+        - event: LiquidateBorrow(address,address,uint256,address,uint256)
+          handler: handleLiquidateBorrow
+        - event: AccrueInterest(uint256,uint256,uint256,uint256)
+          handler: handleAccrueInterest
+        - event: NewReserveFactor(uint256,uint256)
+          handler: handleNewReserveFactor
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: NewMarketInterestRateModel(address,address)
           handler: handleNewPriceOracle

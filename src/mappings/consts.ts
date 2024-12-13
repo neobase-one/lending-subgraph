@@ -34,6 +34,9 @@ export const cCantoEth_ADDRESS = '0xb49a395b39a0b410675406bee7bd06330cb503e3'
 export const cCantoAtom_ADDRESS = '0xc0d6574b2fe71eed8cd305df0da2323237322557'
 export const cNoteUsdc_Address = '0xd6a97e43fc885a83e97d599796458a331e580800'
 export const cNoteUsdt_Address = '0xf0cd6b5ce8a01d1b81f1d8b76643866c5816b49f'
+export const cfBILL_ADDRESS = '0xf1f89df149bc5f2b6b29783915d1f9fe2d24459c'
+export const cifBILL_ADDRESS = '0x897709fc83ba7a4271d22ed4c01278cc1da8d6f8'
+export const cUSYC_ADDRESS = '0x0355e393cf0cf5486d9caefb64407b7b1033c2f1'
 
 export const LIQUIDITY_WHITELIST: string[] = [
   cUSDT_ADDRESS,
@@ -41,6 +44,9 @@ export const LIQUIDITY_WHITELIST: string[] = [
   cETH_ADDRESS,
   cCANTO_ADDRESS,
   cATOM_ADDRESS,
+  cfBILL_ADDRESS,
+  cifBILL_ADDRESS,
+  cUSYC_ADDRESS,
 ]
 
 // export const cW_CANTO_ADDRESS = "0x5e23dc409fc2f832f83cec191e245a191a4bcc5c";
