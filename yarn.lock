@@ -771,9 +771,9 @@ concat-map@0.0.1:
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
   integrity sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=
 
-"concat-stream@github:hugomrdias/concat-stream#feat/smaller":
+"concat-stream@github:hugomrdias/concat-stream#feat/smaller", "concat-stream@github:max-mapper/concat-stream#master":
   version "2.0.0"
-  resolved "https://codeload.github.com/hugomrdias/concat-stream/tar.gz/057bc7b5d6d8df26c8cf00a3f151b6721a0a8034"
+  resolved "https://codeload.github.com/max-mapper/concat-stream/tar.gz/ceaa101bd2e19c5878a98dd6cb875108f49bf5c5"
   dependencies:
     buffer-from "^1.0.0"
     inherits "^2.0.3"
